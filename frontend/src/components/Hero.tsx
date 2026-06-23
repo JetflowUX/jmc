@@ -15,10 +15,13 @@ export function Hero() {
       {/* Background Frame */}
       <div className="absolute inset-0 w-full h-full z-0 bg-black">
         <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/40 to-background z-10" />
-        <img
-          src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=2069&auto=format&fit=crop"
-          alt="Luxury car showcase background"
-          className="w-full h-full object-cover object-center opacity-40 grayscale"
+        <video
+          src="/videos/hero-placeholder.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover object-center opacity-35 grayscale pointer-events-none"
         />
       </div>
 
