@@ -6,6 +6,10 @@ import { Showroom } from './pages/Showroom';
 import { VehicleDetail } from './pages/VehicleDetail';
 import { PartExchangePage } from './pages/PartExchangePage';
 import { SubServicesPages } from './pages/SubServicesPages';
+import { SourcingPage } from './pages/SourcingPage';
+import { DeliveryPage } from './pages/DeliveryPage';
+import { SoftCreditCheckerPage } from './pages/SoftCreditCheckerPage';
+import { TestimonialsPage } from './pages/TestimonialsPage';
 
 type Route = 
   | 'home'
@@ -15,7 +19,11 @@ type Route =
   | 'warranty'
   | 'servicing'
   | 'team'
-  | 'finance';
+  | 'finance'
+  | 'sourcing'
+  | 'delivery'
+  | 'soft-credit-checker'
+  | 'testimonials';
 
 export function App() {
   const [route, setRoute] = useState<Route>('home');
@@ -78,6 +86,14 @@ export function App() {
         setRoute('team');
       } else if (hash === '#/finance') {
         setRoute('finance');
+      } else if (hash === '#/sourcing') {
+        setRoute('sourcing');
+      } else if (hash === '#/delivery') {
+        setRoute('delivery');
+      } else if (hash === '#/soft-credit-checker') {
+        setRoute('soft-credit-checker');
+      } else if (hash === '#/testimonials') {
+        setRoute('testimonials');
       } else {
         // Fallback for homepage and simple anchor links (e.g. #contact, #showroom slider)
         setRoute('home');
@@ -174,6 +190,22 @@ export function App() {
 
         {route === 'finance' && (
           <SubServicesPages type="finance-info" onNavigateToShowroom={handleNavigateToShowroom} />
+        )}
+
+        {route === 'sourcing' && (
+          <SourcingPage onNavigateToShowroom={handleNavigateToShowroom} />
+        )}
+
+        {route === 'delivery' && (
+          <DeliveryPage onNavigateToShowroom={handleNavigateToShowroom} />
+        )}
+
+        {route === 'soft-credit-checker' && (
+          <SoftCreditCheckerPage onNavigateToShowroom={handleNavigateToShowroom} />
+        )}
+
+        {route === 'testimonials' && (
+          <TestimonialsPage onNavigateToShowroom={handleNavigateToShowroom} />
         )}
       </main>
 

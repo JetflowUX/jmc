@@ -138,7 +138,13 @@ export function Footer() {
           <p>
             &copy; {new Date().getFullYear()} {DEALERSHIP_DETAILS.name}. All rights reserved.
           </p>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-x-6 gap-y-2 justify-center md:justify-end">
+            <a href="#/showroom" className="hover:text-white transition-colors">Showroom</a>
+            <a href="#/soft-credit-checker" className="hover:text-white transition-colors">Finance Checker</a>
+            <a href="#/part-exchange" className="hover:text-white transition-colors">Part Exchange</a>
+            <a href="#/sourcing" className="hover:text-white transition-colors">Sourcing</a>
+            <a href="#/delivery" className="hover:text-white transition-colors">Delivery</a>
+            <a href="#/testimonials" className="hover:text-white transition-colors">Reviews</a>
             <a href="#/warranty" className="hover:text-white transition-colors">Warranty</a>
             <a href="#/servicing" className="hover:text-white transition-colors">Servicing</a>
             <a href="#/team" className="hover:text-white transition-colors">Our Promise</a>
