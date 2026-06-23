@@ -1,132 +1,86 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ShieldCheck, Wrench, BadgeCheck } from 'lucide-react';
+
 export function Hero() {
   const trustBadges = [
-  {
-    icon: ShieldCheck,
-    text: 'HPI Checked'
-  },
-  {
-    icon: Wrench,
-    text: '60 Point Inspection'
-  },
-  {
-    icon: BadgeCheck,
-    text: '12 Month MOT'
-  },
-  {
-    icon: CheckCircle2,
-    text: 'FCA Regulated'
-  }];
+    { icon: ShieldCheck, text: 'HPI Checked' },
+    { icon: Wrench, text: '60 Point Inspection' },
+    { icon: BadgeCheck, text: '12 Month MOT' },
+    { icon: CheckCircle2, text: 'FCA Regulated' }
+  ];
 
   return (
     <section className="relative h-screen min-h-[500px] md:min-h-[800px] flex items-center justify-center overflow-hidden">
-      {/* Video Background */}
-      <div className="absolute inset-0 w-full h-full z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/40 to-background z-10" />
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=2069&auto=format&fit=crop"
-          className="w-full h-full object-cover object-center"
-        >
-          <source src="/videos/hero-placeholder.mp4" type="video/mp4" />
-        </video>
-        
+      {/* Background Frame */}
+      <div className="absolute inset-0 w-full h-full z-0 bg-black">
+        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/40 to-background z-10" />
+        <img
+          src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=2069&auto=format&fit=crop"
+          alt="Luxury car showcase background"
+          className="w-full h-full object-cover object-center opacity-40 grayscale"
+        />
       </div>
 
       <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 w-full pt-20">
         <div className="max-w-3xl">
           <motion.div
-            initial={{
-              opacity: 0,
-              y: 30
-            }}
-            animate={{
-              opacity: 1,
-              y: 0
-            }}
-            transition={{
-              duration: 0.8,
-              ease: 'easeOut'
-            }}>
-            
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-tight">
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          >
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-tight text-white">
               Find Your Next Car <br />
               <span className="text-gradient">With Confidence</span>
             </h1>
           </motion.div>
 
           <motion.p
-            initial={{
-              opacity: 0,
-              y: 30
-            }}
-            animate={{
-              opacity: 1,
-              y: 0
-            }}
-            transition={{
-              duration: 0.8,
-              delay: 0.2,
-              ease: 'easeOut'
-            }}
-            className="text-xl md:text-2xl text-textMuted mb-10 font-light">
-            
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+            className="text-xl md:text-2xl text-textMuted mb-10 font-light"
+          >
             Quality Approved Vehicles. Transparent Pricing. Flexible Finance.
           </motion.p>
 
           <motion.div
-            initial={{
-              opacity: 0,
-              y: 30
-            }}
-            animate={{
-              opacity: 1,
-              y: 0
-            }}
-            transition={{
-              duration: 0.8,
-              delay: 0.4,
-              ease: 'easeOut'
-            }}
-            className="flex flex-col sm:flex-row gap-4 mb-16">
-            
-            <button className="bg-primary hover:bg-primaryHover text-white px-8 py-4 rounded-full font-medium text-lg transition-all shadow-glow flex items-center justify-center">
-              Browse Cars
-            </button>
-            <button className="glass-panel hover:bg-white/10 text-white px-8 py-4 rounded-full font-medium text-lg transition-all flex items-center justify-center">
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+            className="flex flex-col sm:flex-row gap-4 mb-16"
+          >
+            <a
+              href="#/showroom"
+              className="bg-primary hover:bg-primaryHover text-white px-8 py-4 rounded-full font-medium text-lg transition-all shadow-glow flex items-center justify-center text-center cursor-pointer"
+            >
+              Browse Showroom
+            </a>
+            <a
+              href="#/finance"
+              className="glass-panel hover:bg-white/10 text-white px-8 py-4 rounded-full font-medium text-lg transition-all flex items-center justify-center text-center cursor-pointer"
+            >
               Get Finance Quote
-            </button>
+            </a>
           </motion.div>
 
           <motion.div
-            initial={{
-              opacity: 0
-            }}
-            animate={{
-              opacity: 1
-            }}
-            transition={{
-              duration: 1,
-              delay: 0.8
-            }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            
-            {trustBadges.map((badge, index) =>
-            <div key={index} className="flex items-center gap-2">
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.8 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-6"
+          >
+            {trustBadges.map((badge, index) => (
+              <div key={index} className="flex items-center gap-2">
                 <badge.icon className="text-primary w-5 h-5" />
                 <span className="text-sm font-medium text-white/80">
                   {badge.text}
                 </span>
               </div>
-            )}
+            ))}
           </motion.div>
         </div>
       </div>
-    </section>);
-
+    </section>
+  );
 }
