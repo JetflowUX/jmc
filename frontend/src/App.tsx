@@ -1,10 +1,5 @@
 import React from 'react';
-import HomePage from './pages/HomePage';
-import './index.css';
-
-function App() {
-  return <HomePage />;
+import { Home } from './pages/Home';
+export function App() {
+  return <Home />;
 }
-
-export default App;
-

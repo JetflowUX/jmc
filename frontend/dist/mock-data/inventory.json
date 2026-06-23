@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "make": "Audi",
+    "model": "A4",
+    "price": 15000,
+    "image": "/images/audi-a4.jpg",
+    "specs": { "Mileage": "30,000 miles", "Year": "2018" }
+  },
+  {
+    "id": "2",
+    "make": "BMW",
+    "model": "3 Series",
+    "price": 18000,
+    "image": "/images/bmw-3.jpg",
+    "specs": { "Mileage": "25,000 miles", "Year": "2019" }
+  }
+]

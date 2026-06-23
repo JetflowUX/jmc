@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[72],{9:function(e,n,t){e.exports=t("pAeQ")},pAeQ:function(e,n){window.ga=function(e,n,t,a,o){var c=arguments.length>5&&void 0!==arguments[5]?arguments[5]:null;dataLayer.push({event:"customEvent",structuredEvent:{action:a,category:t,label:o,value:c,name:"legacy_ga_event"}})}}},[[9,2]]]);
