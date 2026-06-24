@@ -11,9 +11,9 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative h-screen min-h-[500px] md:min-h-[800px] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen lg:h-screen flex items-center justify-center py-28 lg:py-0 overflow-hidden">
       {/* Background Frame */}
-      <div className="absolute inset-0 w-full h-full z-0 bg-black">
+      <div className="absolute inset-0 w-full h-full z-0 bg-background">
         <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/40 to-background z-10" />
         <video
           src="/videos/hero-placeholder.mp4"
@@ -21,7 +21,7 @@ export function Hero() {
           loop
           muted
           playsInline
-          className="w-full h-full object-cover object-center opacity-35 grayscale pointer-events-none"
+          className="w-full h-full object-cover object-center opacity-[0.12] grayscale pointer-events-none"
         />
       </div>
 
@@ -32,7 +32,7 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-tight text-white">
+            <h1 className="text-5xl md:text-7xl font-serif font-light tracking-tight mb-6 leading-tight text-text">
               Find Your Next Car <br />
               <span className="text-gradient">With Confidence</span>
             </h1>
@@ -61,7 +61,7 @@ export function Hero() {
             </a>
             <a
               href="#/finance"
-              className="glass-panel hover:bg-white/10 text-white px-8 py-4 rounded-full font-medium text-lg transition-all flex items-center justify-center text-center cursor-pointer"
+              className="bg-transparent hover:bg-surfaceHighlight text-text border border-border px-8 py-4 rounded-full font-medium text-lg transition-all flex items-center justify-center text-center cursor-pointer"
             >
               Get Finance Quote
             </a>
@@ -71,12 +71,12 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
           >
             {trustBadges.map((badge, index) => (
               <div key={index} className="flex items-center gap-2">
-                <badge.icon className="text-primary w-5 h-5" />
-                <span className="text-sm font-medium text-white/80">
+                <badge.icon className="text-primary w-5 h-5 shrink-0" />
+                <span className="text-xs sm:text-sm font-medium text-textMuted">
                   {badge.text}
                 </span>
               </div>

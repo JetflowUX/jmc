@@ -109,7 +109,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
         <div className="mb-8">
           <button
             onClick={onNavigateToShowroom}
-            className="text-textMuted hover:text-white transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
+            className="text-textMuted hover:text-primary transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
           >
             <ArrowLeft size={16} /> Back to Showroom
           </button>
@@ -120,7 +120,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
           <span className="text-xs text-primary font-bold uppercase tracking-wider bg-primary/10 border border-primary/20 px-3 py-1 rounded-full inline-flex items-center gap-1.5">
             <ShieldCheck size={12} /> Credit Checker
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Finance Eligibility Checker</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-light text-text tracking-tight">Finance Eligibility Checker</h1>
           <p className="text-textMuted text-lg">
             Find out if you qualify for vehicle finance before actually applying, with **no impact to your credit score**. Initial checks are 100% soft searches.
           </p>
@@ -133,12 +133,12 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
             { title: 'No Credit Score Impact', desc: 'Your eligibility check is not visible to other lenders and will not affect your credit rating.' },
             { title: '100% No-Obligation', desc: 'There is zero cost for checking and you are under no commitment to complete any purchase.' }
           ].map((step, idx) => (
-            <div key={idx} className="glass-panel rounded-3xl p-6 border border-white/5 space-y-4 flex flex-col justify-between">
+            <div key={idx} className="glass-panel rounded-3xl p-6 border border-border space-y-4 flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="w-10 h-10 bg-primary/10 border border-primary/20 text-primary rounded-xl flex items-center justify-center font-bold text-sm">
                   {idx + 1}
                 </div>
-                <h3 className="text-white font-bold text-base">{step.title}</h3>
+                <h3 className="text-text font-bold text-base">{step.title}</h3>
                 <p className="text-textMuted text-xs leading-relaxed">{step.desc}</p>
               </div>
             </div>
@@ -149,9 +149,9 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-16">
           
           {/* Eligibility Quiz Panel */}
-          <div className="lg:col-span-7 glass-panel rounded-3xl p-6 md:p-8 border border-white/5 space-y-6">
+          <div className="lg:col-span-7 glass-panel rounded-3xl p-6 md:p-8 border border-border space-y-6">
             <div>
-              <h3 className="text-xl font-bold text-white">Check Your Eligibility</h3>
+              <h3 className="text-xl font-bold text-text">Check Your Eligibility</h3>
               <p className="text-textMuted text-xs mt-1">Complete our short wizard to check your pre-approved rates.</p>
             </div>
 
@@ -165,7 +165,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       type="number"
                       value={carPrice}
                       onChange={(e) => setCarPrice(e.target.value)}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all font-semibold"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all font-semibold"
                     />
                   </div>
                   <div className="space-y-1">
@@ -174,7 +174,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       type="number"
                       value={deposit}
                       onChange={(e) => setDeposit(e.target.value)}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all font-semibold"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all font-semibold"
                     />
                   </div>
                 </div>
@@ -184,7 +184,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                   <select
                     value={term}
                     onChange={(e) => setTerm(e.target.value)}
-                    className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                    className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                   >
                     <option value="24">24 Months (2 Years)</option>
                     <option value="36">36 Months (3 Years)</option>
@@ -210,7 +210,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                     <select
                       value={personalDetails.title}
                       onChange={(e) => setPersonalDetails({ ...personalDetails, title: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none"
                     >
                       <option value="Mr">Mr</option>
                       <option value="Mrs">Mrs</option>
@@ -226,7 +226,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       placeholder="John"
                       value={personalDetails.firstName}
                       onChange={(e) => setPersonalDetails({ ...personalDetails, firstName: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text"
                     />
                   </div>
                 </div>
@@ -240,7 +240,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       placeholder="Doe"
                       value={personalDetails.lastName}
                       onChange={(e) => setPersonalDetails({ ...personalDetails, lastName: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text"
                     />
                   </div>
                   <div className="space-y-1">
@@ -250,7 +250,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       required
                       value={personalDetails.dob}
                       onChange={(e) => setPersonalDetails({ ...personalDetails, dob: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text"
                     />
                   </div>
                 </div>
@@ -264,7 +264,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       placeholder="john@example.com"
                       value={personalDetails.email}
                       onChange={(e) => setPersonalDetails({ ...personalDetails, email: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text"
                     />
                   </div>
                   <div className="space-y-1">
@@ -275,7 +275,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       placeholder="07800 000000"
                       value={personalDetails.phone}
                       onChange={(e) => setPersonalDetails({ ...personalDetails, phone: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text"
                     />
                   </div>
                 </div>
@@ -283,7 +283,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                 <div className="flex gap-4 pt-4">
                   <button
                     onClick={() => setQuizStep('budget')}
-                    className="w-1/3 border border-white/10 text-white py-3.5 rounded-xl font-bold transition-all cursor-pointer"
+                    className="w-1/3 border border-border text-text hover:bg-surfaceHighlight/50 py-3.5 rounded-xl font-bold transition-all cursor-pointer"
                   >
                     Back
                   </button>
@@ -311,7 +311,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       placeholder="OL10 4RF"
                       value={addressDetails.postcode}
                       onChange={(e) => setAddressDetails({ ...addressDetails, postcode: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white uppercase font-bold"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text uppercase font-bold"
                     />
                   </div>
                   <div className="space-y-1">
@@ -322,7 +322,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       placeholder="68 Bury New Road"
                       value={addressDetails.addressLine1}
                       onChange={(e) => setAddressDetails({ ...addressDetails, addressLine1: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text"
                     />
                   </div>
                 </div>
@@ -336,7 +336,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       placeholder="Bury"
                       value={addressDetails.town}
                       onChange={(e) => setAddressDetails({ ...addressDetails, town: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text"
                     />
                   </div>
                   <div className="space-y-1">
@@ -344,7 +344,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                     <select
                       value={addressDetails.timeAtAddress}
                       onChange={(e) => setAddressDetails({ ...addressDetails, timeAtAddress: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none"
                     >
                       <option value="Under 1 Year">Under 1 Year</option>
                       <option value="1 - 3 Years">1 - 3 Years</option>
@@ -356,7 +356,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                     <select
                       value={addressDetails.employment}
                       onChange={(e) => setAddressDetails({ ...addressDetails, employment: e.target.value })}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none"
                     >
                       <option value="Employed">Full-Time Employed</option>
                       <option value="Self-Employed">Self-Employed</option>
@@ -370,7 +370,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                 <div className="flex gap-4 pt-4">
                   <button
                     onClick={() => setQuizStep('personal')}
-                    className="w-1/3 border border-white/10 text-white py-3.5 rounded-xl font-bold transition-all cursor-pointer"
+                    className="w-1/3 border border-border text-text hover:bg-surfaceHighlight/50 py-3.5 rounded-xl font-bold transition-all cursor-pointer"
                   >
                     Back
                   </button>
@@ -390,10 +390,10 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
             {quizStep === 'results' && (
               <div className="space-y-6 text-center animate-fade-in">
                 <div className="space-y-2">
-                  <span className="text-xs text-green-500 font-bold bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
+                  <span className="text-xs text-green-600 font-bold bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full uppercase tracking-wider">
                     Eligibility Check Complete
                   </span>
-                  <h3 className="text-2xl font-bold text-white">Your Pre-Approval Assessment</h3>
+                  <h3 className="text-2xl font-bold text-text">Your Pre-Approval Assessment</h3>
                 </div>
 
                 {/* Score Circle Gauge */}
@@ -404,7 +404,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                       cx="80"
                       cy="80"
                       r="65"
-                      stroke="#18181b"
+                      stroke="#E5E3DE"
                       strokeWidth="10"
                       fill="transparent"
                     />
@@ -421,25 +421,25 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                     />
                   </svg>
                   <div className="absolute text-center">
-                    <span className="text-4xl font-extrabold text-white">{eligibilityScore}%</span>
+                    <span className="text-4xl font-extrabold text-text">{eligibilityScore}%</span>
                     <span className="block text-[10px] text-textMuted uppercase font-bold tracking-wider mt-1">Approval Rating</span>
                   </div>
                 </div>
 
                 <p className="text-textMuted text-xs max-w-md mx-auto leading-relaxed">
-                  Excellent! Based on your credit reference metrics, your approval likelihood is <span className="text-white font-bold">High</span>.
+                  Excellent! Based on your credit reference metrics, your approval likelihood is <span className="text-text font-bold">High</span>.
                 </p>
 
                 {/* Simulated Quotes */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left pt-4">
-                  <div className="bg-surfaceHighlight/55 border border-white/5 p-5 rounded-2xl space-y-2">
+                  <div className="bg-surfaceHighlight border border-border p-5 rounded-2xl space-y-2">
                     <span className="text-[10px] text-textMuted font-bold uppercase tracking-wider block">Estimated PCP Payment</span>
-                    <div className="text-2xl font-extrabold text-white">£{pcpQuote} <span className="text-xs font-normal text-textMuted">/ mo</span></div>
+                    <div className="text-2xl font-extrabold text-text">£{pcpQuote} <span className="text-xs font-normal text-textMuted">/ mo</span></div>
                     <p className="text-[10px] text-textMuted leading-relaxed">Based on 9.9% Representative APR, 48m, with £{deposit} deposit.</p>
                   </div>
-                  <div className="bg-surfaceHighlight/55 border border-white/5 p-5 rounded-2xl space-y-2">
+                  <div className="bg-surfaceHighlight border border-border p-5 rounded-2xl space-y-2">
                     <span className="text-[10px] text-textMuted font-bold uppercase tracking-wider block">Estimated HP Payment</span>
-                    <div className="text-2xl font-extrabold text-white">£{hpQuote} <span className="text-xs font-normal text-textMuted">/ mo</span></div>
+                    <div className="text-2xl font-extrabold text-text">£{hpQuote} <span className="text-xs font-normal text-textMuted">/ mo</span></div>
                     <p className="text-[10px] text-textMuted leading-relaxed">Own the car outright at the end of the term. No balloon fee.</p>
                   </div>
                 </div>
@@ -447,7 +447,7 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
                 <div className="flex gap-4 pt-6">
                   <button
                     onClick={resetQuiz}
-                    className="w-1/3 border border-white/10 text-white py-3.5 rounded-xl font-bold transition-all text-xs cursor-pointer"
+                    className="w-1/3 border border-border text-text py-3.5 rounded-xl font-bold transition-all text-xs cursor-pointer"
                   >
                     Check Another Car
                   </button>
@@ -465,16 +465,16 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
           {/* Sourcing Info Panel */}
           <div className="lg:col-span-5 space-y-8">
             {/* Representative Example Box */}
-            <div className="glass-panel rounded-3xl p-6 border border-white/5 space-y-3">
-              <h4 className="font-bold text-white text-sm uppercase tracking-wider">Representative Example (PCP)</h4>
+            <div className="glass-panel rounded-3xl p-6 border border-border space-y-3">
+              <h4 className="font-bold text-text text-sm uppercase tracking-wider">Representative Example (PCP)</h4>
               <p className="text-[11px] text-textMuted leading-relaxed">
                 Cash price £18,495.00, Annual Interest Rate (fixed) 5.14% p.a., with a representative 9.9% APR, total amount of credit £16,646.00, deposit of £1,849.00, followed by 49 monthly payments of £278.75 with a final payment of £8,155.00, total amount payable is £23,384.00, annual mileage 8,000, excess mileage fee 10p per mile.
               </p>
             </div>
 
             {/* Video Box HP */}
-            <div className="glass-panel rounded-3xl p-4 border border-white/5 space-y-2">
-              <h4 className="font-bold text-white text-xs px-2">Understanding Hire Purchase (HP)</h4>
+            <div className="glass-panel rounded-3xl p-4 border border-border space-y-2">
+              <h4 className="font-bold text-text text-xs px-2">Understanding Hire Purchase (HP)</h4>
               <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40">
                 <iframe
                   width="100%"
@@ -489,8 +489,8 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
             </div>
 
             {/* Video Box PCP */}
-            <div className="glass-panel rounded-3xl p-4 border border-white/5 space-y-2">
-              <h4 className="font-bold text-white text-xs px-2">Understanding Personal Contract Purchase (PCP)</h4>
+            <div className="glass-panel rounded-3xl p-4 border border-border space-y-2">
+              <h4 className="font-bold text-text text-xs px-2">Understanding Personal Contract Purchase (PCP)</h4>
               <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40">
                 <iframe
                   width="100%"
@@ -507,16 +507,16 @@ export function SoftCreditCheckerPage({ onNavigateToShowroom }: SoftCreditChecke
         </div>
 
         {/* FAQs Accordion Accordion */}
-        <div className="glass-panel rounded-3xl p-6 md:p-8 border border-white/5">
-          <h2 className="text-2xl font-bold text-white text-center mb-8">Frequently Asked Questions</h2>
+        <div className="glass-panel rounded-3xl p-6 md:p-8 border border-border">
+          <h2 className="text-2xl font-serif font-light text-text text-center mb-8">Frequently Asked Questions</h2>
           <div className="space-y-4 max-w-4xl mx-auto">
             {faqs.map((faq, index) => {
               const isOpen = openFaqIndex === index;
               return (
-                <div key={index} className="border-b border-white/5 pb-4">
+                <div key={index} className="border-b border-border pb-4">
                   <button
                     onClick={() => toggleFaq(index)}
-                    className="w-full flex justify-between items-center text-left py-3 text-white hover:text-primary transition-colors cursor-pointer"
+                    className="w-full flex justify-between items-center text-left py-3 text-text hover:text-primary transition-colors cursor-pointer"
                   >
                     <h4 className="font-bold text-base md:text-lg">{faq.question}</h4>
                     {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}

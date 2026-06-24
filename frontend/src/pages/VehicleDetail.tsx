@@ -75,6 +75,18 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
       });
   }, [vehicleId]);
 
+  useEffect(() => {
+    const isModalOpen = showEnquiryModal || showReserveModal;
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showEnquiryModal, showReserveModal]);
+
   // Finance calculations
   const financeCalculations = useMemo(() => {
     if (!vehicle) return null;
@@ -146,7 +158,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background text-white flex flex-col items-center justify-center pt-24">
+      <div className="min-h-screen bg-background text-text flex flex-col items-center justify-center pt-24">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="text-textMuted">Loading Vehicle Details...</p>
       </div>
@@ -155,7 +167,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
 
   if (!vehicle) {
     return (
-      <div className="min-h-screen bg-background text-white flex flex-col items-center justify-center pt-24">
+      <div className="min-h-screen bg-background text-text flex flex-col items-center justify-center pt-24">
         <HelpCircle size={48} className="text-textMuted mb-4" />
         <h2 className="text-2xl font-bold mb-2">Vehicle Not Found</h2>
         <p className="text-textMuted mb-6">The requested vehicle details could not be loaded.</p>
@@ -177,7 +189,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-textMuted hover:text-white transition-colors text-sm font-medium"
+            className="flex items-center gap-2 text-textMuted hover:text-text transition-colors text-sm font-medium"
           >
             <ChevronLeft size={18} /> Back to Showroom
           </button>
@@ -185,7 +197,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsFavorited(!isFavorited)}
-              className={`flex items-center gap-2 border px-4 py-2 rounded-xl text-sm font-medium transition-all ${isFavorited ? 'border-red-500/30 bg-red-500/10 text-red-500' : 'border-white/10 bg-surfaceHighlight hover:bg-white/10 text-white'}`}
+              className={`flex items-center gap-2 border px-4 py-2 rounded-xl text-sm font-medium transition-all ${isFavorited ? 'border-red-500/30 bg-red-500/10 text-red-500' : 'border-border bg-surfaceHighlight hover:bg-surfaceHighlight/80 text-text'}`}
             >
               <Heart size={16} fill={isFavorited ? 'currentColor' : 'none'} />
               {isFavorited ? 'Saved to Favorites' : 'Save to Favorites'}
@@ -200,12 +212,12 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
               <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full">
                 {vehicle.year} Model
               </span>
-              <h1 className="text-3xl md:text-5xl font-bold text-white mt-3 leading-tight">{vehicle.title}</h1>
+              <h1 className="text-3xl md:text-5xl font-bold text-text mt-3 leading-tight">{vehicle.title}</h1>
               <p className="text-textMuted text-lg mt-1">{vehicle.subtitle}</p>
             </div>
             <div className="text-left md:text-right shrink-0">
               <span className="text-sm text-textMuted block mb-1">Cash Price</span>
-              <span className="text-3xl md:text-4xl font-extrabold text-white">£{vehicle.price.toLocaleString()}</span>
+              <span className="text-3xl md:text-4xl font-extrabold text-text">£{vehicle.price.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -214,7 +226,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
           {/* Main Content (Gallery, Specs, Description) */}
           <div className="lg:col-span-2 space-y-10">
             {/* Interactive Image Gallery */}
-            <div className="glass-panel rounded-3xl overflow-hidden border border-white/5 bg-black">
+            <div className="glass-panel rounded-3xl overflow-hidden border border-border bg-black">
               {/* Main Image Frame */}
               <div className="relative h-[300px] sm:h-[450px] flex items-center justify-center bg-black group/gallery">
                 <img
@@ -242,14 +254,14 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                 )}
 
                 {/* Counter Badge */}
-                <div className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-xs font-medium text-white">
+                <div className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-xs font-medium text-white">
                   {activeImageIndex + 1} / {galleryImages.length}
                 </div>
               </div>
 
               {/* Thumbnails strip */}
               {galleryImages.length > 1 && (
-                <div className="p-4 bg-surfaceHighlight/50 border-t border-white/5 flex gap-3 overflow-x-auto scrollbar-thin scrollbar-thumb-zinc-800">
+                <div className="p-4 bg-surfaceHighlight/50 border-t border-border flex gap-3 overflow-x-auto scrollbar-thin scrollbar-thumb-zinc-800">
                   {galleryImages.map((img, idx) => (
                     <button
                       key={idx}
@@ -265,31 +277,31 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
 
             {/* Core Stats Bar */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col items-center justify-center text-center">
+              <div className="glass-panel p-3 sm:p-5 rounded-2xl border border-border flex flex-col items-center justify-center text-center">
                 <Gauge size={22} className="text-primary mb-2" />
                 <span className="text-xs text-textMuted">Mileage</span>
-                <span className="text-base font-bold text-white mt-0.5">{vehicle.mileage}</span>
+                <span className="text-sm sm:text-base font-bold text-text mt-0.5 truncate max-w-full">{vehicle.mileage}</span>
               </div>
-              <div className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col items-center justify-center text-center">
+              <div className="glass-panel p-3 sm:p-5 rounded-2xl border border-border flex flex-col items-center justify-center text-center">
                 <Fuel size={22} className="text-primary mb-2" />
                 <span className="text-xs text-textMuted">Fuel Type</span>
-                <span className="text-base font-bold text-white mt-0.5">{vehicle.fuel}</span>
+                <span className="text-sm sm:text-base font-bold text-text mt-0.5 truncate max-w-full">{vehicle.fuel}</span>
               </div>
-              <div className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col items-center justify-center text-center">
+              <div className="glass-panel p-3 sm:p-5 rounded-2xl border border-border flex flex-col items-center justify-center text-center">
                 <Calendar size={22} className="text-primary mb-2" />
                 <span className="text-xs text-textMuted">Transmission</span>
-                <span className="text-base font-bold text-white mt-0.5">{vehicle.transmission}</span>
+                <span className="text-sm sm:text-base font-bold text-text mt-0.5 truncate max-w-full">{vehicle.transmission}</span>
               </div>
-              <div className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col items-center justify-center text-center">
+              <div className="glass-panel p-3 sm:p-5 rounded-2xl border border-border flex flex-col items-center justify-center text-center">
                 <ShieldCheck size={22} className="text-primary mb-2" />
                 <span className="text-xs text-textMuted">Body Style</span>
-                <span className="text-base font-bold text-white mt-0.5">{vehicle.bodyStyle}</span>
+                <span className="text-sm sm:text-base font-bold text-text mt-0.5 truncate max-w-full">{vehicle.bodyStyle}</span>
               </div>
             </div>
 
             {/* Description Text */}
-            <div className="glass-panel rounded-3xl p-6 md:p-8 border border-white/5 space-y-4">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+            <div className="glass-panel rounded-3xl p-6 md:p-8 border border-border space-y-4">
+              <h2 className="text-2xl font-bold text-text flex items-center gap-2">
                 <Sparkles size={20} className="text-primary" /> Vehicle Overview
               </h2>
               <div className="text-textMuted leading-relaxed text-sm space-y-4 whitespace-pre-line">
@@ -298,13 +310,13 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
             </div>
 
             {/* Full Specifications Grid */}
-            <div className="glass-panel rounded-3xl p-6 md:p-8 border border-white/5 space-y-6">
-              <h2 className="text-2xl font-bold text-white">Technical Specifications</h2>
+            <div className="glass-panel rounded-3xl p-6 md:p-8 border border-border space-y-6">
+              <h2 className="text-2xl font-bold text-text">Technical Specifications</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                 {Object.entries(vehicle.specs).map(([key, val]) => (
-                  <div key={key} className="flex justify-between items-center py-2.5 border-b border-white/5 text-sm">
+                  <div key={key} className="flex justify-between items-center py-2.5 border-b border-border text-sm">
                     <span className="text-textMuted font-medium">{key}</span>
-                    <span className="text-white font-semibold text-right">{val}</span>
+                    <span className="text-text font-semibold text-right">{val}</span>
                   </div>
                 ))}
               </div>
@@ -314,11 +326,11 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
           {/* Sticky Sidebar (Calculators & CTAs) */}
           <div className="space-y-6 lg:sticky lg:top-28">
             {/* Pricing & CTA Panel */}
-            <div className="glass-panel rounded-3xl p-6 md:p-8 border border-white/5 space-y-6">
+            <div className="glass-panel rounded-3xl p-6 md:p-8 border border-border space-y-6">
               <div>
                 <span className="text-xs text-textMuted">Buy this car for</span>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-3xl font-extrabold text-white">£{vehicle.price.toLocaleString()}</span>
+                  <span className="text-3xl font-extrabold text-text">£{vehicle.price.toLocaleString()}</span>
                 </div>
                 {financeCalculations && (
                   <div className="mt-3 bg-primary/10 border border-primary/20 p-3.5 rounded-xl flex justify-between items-center">
@@ -343,29 +355,29 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                 </button>
                 <button
                   onClick={() => setShowEnquiryModal(true)}
-                  className="w-full bg-surfaceHighlight hover:bg-white/10 text-white border border-white/10 py-4 rounded-xl font-semibold transition-colors cursor-pointer"
+                  className="w-full bg-surfaceHighlight hover:bg-surfaceHighlight/80 text-text border border-border py-4 rounded-xl font-semibold transition-colors cursor-pointer"
                 >
                   Make an Enquiry
                 </button>
                 <button
                   onClick={() => onNavigateToPartExchange(vehicle.id)}
-                  className="w-full bg-transparent hover:bg-white/5 text-textMuted hover:text-white border border-dashed border-white/15 py-3.5 rounded-xl text-sm font-semibold transition-all cursor-pointer"
+                  className="w-full bg-transparent hover:bg-surfaceHighlight text-textMuted hover:text-text border border-dashed border-border py-3.5 rounded-xl text-sm font-semibold transition-all cursor-pointer"
                 >
                   Part Exchange Valuation
                 </button>
               </div>
 
               {/* Quick Trust Checklist */}
-              <div className="border-t border-white/5 pt-5 space-y-3">
-                <div className="flex items-center gap-2.5 text-xs text-white/90">
+              <div className="border-t border-border pt-5 space-y-3">
+                <div className="flex items-center gap-2.5 text-xs text-text">
                   <CheckCircle2 size={15} className="text-primary shrink-0" />
                   <span>Fully HPI Inspected & Checked</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-xs text-white/90">
+                <div className="flex items-center gap-2.5 text-xs text-text">
                   <CheckCircle2 size={15} className="text-primary shrink-0" />
                   <span>60 Point Safety Check Pre-Delivery</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-xs text-white/90">
+                <div className="flex items-center gap-2.5 text-xs text-text">
                   <CheckCircle2 size={15} className="text-primary shrink-0" />
                   <span>Includes Minimum 12 Month MOT</span>
                 </div>
@@ -374,27 +386,27 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
 
             {/* Interactive Finance Calculator */}
             {financeCalculations && (
-              <div className="glass-panel rounded-3xl p-6 border border-white/5 space-y-6">
+              <div className="glass-panel rounded-3xl p-6 border border-border space-y-6">
                 <div className="flex items-center gap-2 justify-between">
-                  <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                  <h3 className="font-bold text-text text-lg flex items-center gap-2">
                     <Calculator size={18} className="text-primary" /> Finance Calculator
                   </h3>
-                  <span className="text-[10px] text-textMuted bg-surfaceHighlight border border-white/5 px-2 py-0.5 rounded">
+                  <span className="text-[10px] text-textMuted bg-surfaceHighlight border border-border px-2 py-0.5 rounded">
                     Representative Example
                   </span>
                 </div>
 
                 {/* HP / PCP Selection Tabs */}
-                <div className="grid grid-cols-2 gap-1 bg-surfaceHighlight p-1 rounded-xl border border-white/5">
+                <div className="grid grid-cols-2 gap-1 bg-surfaceHighlight p-1 rounded-xl border border-border">
                   <button
                     onClick={() => setFinanceType('pcp')}
-                    className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${financeType === 'pcp' ? 'bg-primary text-white shadow' : 'text-textMuted hover:text-white'}`}
+                    className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${financeType === 'pcp' ? 'bg-primary text-white shadow' : 'text-textMuted hover:text-text'}`}
                   >
                     PCP (Personal Contract)
                   </button>
                   <button
                     onClick={() => setFinanceType('hp')}
-                    className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${financeType === 'hp' ? 'bg-primary text-white shadow' : 'text-textMuted hover:text-white'}`}
+                    className={`py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${financeType === 'hp' ? 'bg-primary text-white shadow' : 'text-textMuted hover:text-text'}`}
                   >
                     HP (Hire Purchase)
                   </button>
@@ -404,7 +416,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs">
                     <span className="text-textMuted font-semibold uppercase">Deposit</span>
-                    <span className="text-white font-bold">£{deposit.toLocaleString()}</span>
+                    <span className="text-text font-bold">£{deposit.toLocaleString()}</span>
                   </div>
                   <input
                     type="range"
@@ -429,7 +441,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                       <button
                         key={t}
                         onClick={() => setTerm(t)}
-                        className={`py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${term === t ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 bg-surfaceHighlight/50 hover:bg-white/10 text-white'}`}
+                        className={`py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${term === t ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-surfaceHighlight/50 hover:bg-surfaceHighlight text-text'}`}
                       >
                         {t} mths
                       </button>
@@ -438,45 +450,45 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                 </div>
 
                 {/* Live Calculations Summary Table */}
-                <div className="bg-surfaceHighlight/50 border border-white/5 rounded-2xl p-4 space-y-3.5">
+                <div className="bg-surfaceHighlight/50 border border-border rounded-2xl p-4 space-y-3.5">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-textMuted">Cash Price</span>
-                    <span className="text-white font-semibold">£{vehicle.price.toLocaleString()}</span>
+                    <span className="text-text font-semibold">£{vehicle.price.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-textMuted">Deposit</span>
-                    <span className="text-white font-semibold">-£{deposit.toLocaleString()}</span>
+                    <span className="text-text font-semibold">-£{deposit.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-textMuted">Amount of Credit</span>
-                    <span className="text-white font-semibold">£{financeCalculations.amountToFinance.toLocaleString()}</span>
+                    <span className="text-text font-semibold">£{financeCalculations.amountToFinance.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-textMuted">Interest Rate (Fixed)</span>
-                    <span className="text-white font-semibold">5.14% p.a.</span>
+                    <span className="text-text font-semibold">5.14% p.a.</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-textMuted">Representative APR</span>
-                    <span className="text-white font-semibold">9.9% APR</span>
+                    <span className="text-text font-semibold">9.9% APR</span>
                   </div>
                   {financeType === 'pcp' && (
                     <div className="flex justify-between items-center text-xs">
                       <span className="text-textMuted">Optional Final Payment (Balloon)</span>
-                      <span className="text-white font-semibold">£{financeCalculations.balloon.toLocaleString()}</span>
+                      <span className="text-text font-semibold">£{financeCalculations.balloon.toLocaleString()}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-textMuted">Total Interest</span>
-                    <span className="text-white font-semibold">£{financeCalculations.totalInterest.toLocaleString()}</span>
+                    <span className="text-text font-semibold">£{financeCalculations.totalInterest.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between items-center text-xs border-t border-white/10 pt-3">
+                  <div className="flex justify-between items-center text-xs border-t border-border pt-3">
                     <span className="text-textMuted">Total Amount Payable</span>
-                    <span className="text-white font-bold">£{financeCalculations.totalPayable.toLocaleString()}</span>
+                    <span className="text-text font-bold">£{financeCalculations.totalPayable.toLocaleString()}</span>
                   </div>
 
-                  <div className="border-t border-white/10 pt-4 mt-2 text-center">
+                  <div className="border-t border-border pt-4 mt-2 text-center">
                     <span className="text-[10px] text-textMuted uppercase font-semibold block mb-1">Your Monthly Payment</span>
-                    <span className="text-3xl font-extrabold text-white">£{financeCalculations.monthlyPayment}</span>
+                    <span className="text-3xl font-extrabold text-text">£{financeCalculations.monthlyPayment}</span>
                     <span className="text-xs text-textMuted"> / month</span>
                   </div>
                 </div>
@@ -491,13 +503,13 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
           <div onClick={() => setShowEnquiryModal(false)} className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
           
-          <div className="relative bg-surface border border-white/10 rounded-3xl p-6 md:p-8 w-full max-w-lg z-10 overflow-hidden shadow-2xl animate-fade-in">
+          <div className="relative bg-surface border border-border rounded-3xl p-6 md:p-8 w-full max-w-lg z-10 overflow-hidden shadow-2xl animate-fade-in">
             {modalSuccess ? (
               <div className="py-12 text-center space-y-4">
                 <div className="w-16 h-16 bg-green-500/20 border border-green-500/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                   <CheckCircle2 size={32} />
                 </div>
-                <h3 className="text-2xl font-bold text-white">Enquiry Submitted!</h3>
+                <h3 className="text-2xl font-bold text-text">Enquiry Submitted!</h3>
                 <p className="text-textMuted text-sm max-w-sm mx-auto">
                   Thank you for your enquiry on the {vehicle.title}. Our sales team at {DEALERSHIP_DETAILS.shortName} will contact you shortly on {formPhone} or {formEmail}.
                 </p>
@@ -505,8 +517,8 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
             ) : (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-2xl font-bold text-white">Request Information</h3>
-                  <p className="text-textMuted text-xs mt-1">Make an enquiry for: <span className="text-white font-bold">{vehicle.title}</span></p>
+                  <h3 className="text-2xl font-bold text-text">Request Information</h3>
+                  <p className="text-textMuted text-xs mt-1">Make an enquiry for: <span className="text-text font-bold">{vehicle.title}</span></p>
                 </div>
 
                 <form onSubmit={handleFormSubmit} className="space-y-4">
@@ -518,7 +530,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                       value={formName}
                       onChange={(e) => setFormName(e.target.value)}
                       placeholder="e.g. John Doe"
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -530,7 +542,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                         value={formEmail}
                         onChange={(e) => setFormEmail(e.target.value)}
                         placeholder="john@example.com"
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       />
                     </div>
                     <div className="space-y-1">
@@ -541,7 +553,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                         value={formPhone}
                         onChange={(e) => setFormPhone(e.target.value)}
                         placeholder="07800 000000"
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       />
                     </div>
                   </div>
@@ -552,7 +564,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                       value={formMessage}
                       onChange={(e) => setFormMessage(e.target.value)}
                       placeholder={`I am interested in this ${vehicle.title}. Please provide more info.`}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all resize-none"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all resize-none"
                     />
                   </div>
                   <button
@@ -573,13 +585,13 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
           <div onClick={() => setShowReserveModal(false)} className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
           
-          <div className="relative bg-surface border border-white/10 rounded-3xl p-6 md:p-8 w-full max-w-lg z-10 overflow-hidden shadow-2xl animate-fade-in">
+          <div className="relative bg-surface border border-border rounded-3xl p-6 md:p-8 w-full max-w-lg z-10 overflow-hidden shadow-2xl animate-fade-in">
             {modalSuccess ? (
               <div className="py-12 text-center space-y-4">
                 <div className="w-16 h-16 bg-green-500/20 border border-green-500/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                   <CheckCircle2 size={32} />
                 </div>
-                <h3 className="text-2xl font-bold text-white">Holding Deposit Paid!</h3>
+                <h3 className="text-2xl font-bold text-text">Holding Deposit Paid!</h3>
                 <p className="text-textMuted text-sm max-w-sm mx-auto">
                   Congratulations! We have reserved the {vehicle.title} under your name. A confirmation email has been sent to {formEmail}. Our agent will ring you on {formPhone} to coordinate delivery or viewing.
                 </p>
@@ -587,16 +599,16 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
             ) : (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-2xl font-bold text-white">Reserve Vehicle</h3>
+                  <h3 className="text-2xl font-bold text-text">Reserve Vehicle</h3>
                   <p className="text-textMuted text-xs mt-1">
-                    Place a 100% refundable holding deposit of <span className="text-white font-bold">£99</span> to secure this vehicle.
+                    Place a 100% refundable holding deposit of <span className="text-text font-bold">£99</span> to secure this vehicle.
                   </p>
                 </div>
 
-                <div className="bg-surfaceHighlight border border-white/5 rounded-2xl p-4 flex gap-4 items-center">
+                <div className="bg-surfaceHighlight border border-border rounded-2xl p-4 flex gap-4 items-center">
                   <img src={galleryImages[0]} className="w-20 h-14 object-cover rounded-lg" alt="Thumbnail" />
                   <div>
-                    <h4 className="font-bold text-white text-sm">{vehicle.title}</h4>
+                    <h4 className="font-bold text-text text-sm">{vehicle.title}</h4>
                     <p className="text-xs text-textMuted">£{vehicle.price.toLocaleString()} • {vehicle.registration}</p>
                   </div>
                 </div>
@@ -610,7 +622,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                       value={formName}
                       onChange={(e) => setFormName(e.target.value)}
                       placeholder="e.g. John Doe"
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -622,7 +634,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                         value={formEmail}
                         onChange={(e) => setFormEmail(e.target.value)}
                         placeholder="john@example.com"
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       />
                     </div>
                     <div className="space-y-1">
@@ -633,15 +645,15 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                         value={formPhone}
                         onChange={(e) => setFormPhone(e.target.value)}
                         placeholder="07800 000000"
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       />
                     </div>
                   </div>
 
                   {/* Payment placeholder */}
-                  <div className="bg-surfaceHighlight/50 border border-white/10 rounded-2xl p-4 space-y-3">
+                  <div className="bg-surfaceHighlight/50 border border-border rounded-2xl p-4 space-y-3">
                     <span className="text-[10px] text-textMuted font-semibold uppercase block">Mock Card Payment Details</span>
-                    <div className="bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-textMuted/70 flex items-center justify-between">
+                    <div className="bg-background border border-border rounded-xl px-4 py-3 text-sm text-textMuted/70 flex items-center justify-between">
                       <span>4111 •••• •••• 1111</span>
                       <span className="text-xs">12 / 28</span>
                     </div>

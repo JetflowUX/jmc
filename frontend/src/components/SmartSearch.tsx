@@ -85,11 +85,12 @@ export function SmartSearch({ onSearch }: SmartSearchProps) {
   };
 
   return (
-    <section className="relative z-30 -mt-24 max-w-7xl mx-auto px-6 md:px-12 mb-24 animate-fade-in">
-      <div className="glass-panel rounded-3xl p-6 md:p-8 border border-white/5">
+    <section className="relative z-30 -mt-10 md:-mt-24 max-w-7xl mx-auto px-6 md:px-12 mb-24 animate-fade-in">
+      <div className="glass-panel rounded-3xl p-6 md:p-8 border border-border">
+
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-1">
+            <h2 className="text-2xl font-serif font-normal text-text mb-1">
               Smart Vehicle Search
             </h2>
             <p className="text-textMuted text-sm font-medium">
@@ -116,7 +117,7 @@ export function SmartSearch({ onSearch }: SmartSearchProps) {
                 setMake(e.target.value);
                 setModel(''); // reset model
               }}
-              className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
             >
               <option value="">Any Make</option>
               {makes.map((m) => (
@@ -134,7 +135,7 @@ export function SmartSearch({ onSearch }: SmartSearchProps) {
               value={model}
               onChange={(e) => setModel(e.target.value)}
               disabled={!make}
-              className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primary transition-colors appearance-none disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               <option value="">Any Model</option>
               {models.map((m) => (
@@ -151,7 +152,7 @@ export function SmartSearch({ onSearch }: SmartSearchProps) {
             <select
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
             >
               <option value="">Any Budget</option>
               <option value="300">Up to £300/mo</option>
@@ -168,7 +169,7 @@ export function SmartSearch({ onSearch }: SmartSearchProps) {
             <select
               value={bodyStyle}
               onChange={(e) => setBodyStyle(e.target.value)}
-              className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
             >
               <option value="">Any Type</option>
               {bodyStyles.map((b) => (
@@ -185,7 +186,7 @@ export function SmartSearch({ onSearch }: SmartSearchProps) {
             <select
               value={fuel}
               onChange={(e) => setFuel(e.target.value)}
-              className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
             >
               <option value="">Any Fuel</option>
               {fuels.map((f) => (
@@ -202,7 +203,7 @@ export function SmartSearch({ onSearch }: SmartSearchProps) {
             <select
               value={transmission}
               onChange={(e) => setTransmission(e.target.value)}
-              className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+              className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-text focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
             >
               <option value="">Any</option>
               {transmissions.map((t) => (
@@ -212,10 +213,10 @@ export function SmartSearch({ onSearch }: SmartSearchProps) {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-white/5">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-border">
           <button
             onClick={handleSearchSubmit}
-            className="text-textMuted hover:text-white text-sm flex items-center gap-2 transition-colors cursor-pointer"
+            className="text-textMuted hover:text-primary text-sm flex items-center gap-2 transition-colors cursor-pointer"
           >
             <SlidersHorizontal size={16} /> More Filters
           </button>

@@ -58,7 +58,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
         <div className="mb-8">
           <button
             onClick={onNavigateToShowroom}
-            className="text-textMuted hover:text-white transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
+            className="text-textMuted hover:text-primary transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
           >
             <ArrowLeft size={16} /> Back to Showroom
           </button>
@@ -69,7 +69,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
           <span className="text-xs text-primary font-bold uppercase tracking-wider bg-primary/10 border border-primary/20 px-3 py-1 rounded-full inline-flex items-center gap-1.5">
             <Sparkles size={12} /> Vehicle Finder
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Vehicle Sourcing Service</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-light text-text tracking-tight">Vehicle Sourcing Service</h1>
           <p className="text-textMuted text-lg">
             Not found the right car in our current stock? Let our experienced team do the legwork and source your perfect vehicle through our trusted nationwide dealer network.
           </p>
@@ -78,15 +78,15 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Info Side Panel */}
           <div className="lg:col-span-5 space-y-8">
-            <div className="glass-panel rounded-3xl p-8 border border-white/5 space-y-6">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+            <div className="glass-panel rounded-3xl p-8 border border-border space-y-6">
+              <h2 className="text-2xl font-bold text-text flex items-center gap-2">
                 <Search size={22} className="text-primary" /> Let us do all the legwork
               </h2>
               <p className="text-textMuted text-sm leading-relaxed">
                 JMC Motors have many years' experience within the used car motor trade. Over the years, we have built up a trusted network of dealers who we rely upon to source the best quality vehicles.
               </p>
               
-              <div className="space-y-4 pt-4 border-t border-white/5">
+              <div className="space-y-4 pt-4 border-t border-border">
                 {[
                   { title: 'Nationwide Vetting Network', desc: 'We only source from verified, dealer-only networks with complete histories.' },
                   { title: '60-Point Diagnostic Inspection', desc: 'Any sourced vehicle is subjected to our complete diagnostic checklist before handover.' },
@@ -96,7 +96,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                   <div key={idx} className="flex gap-3">
                     <CheckCircle2 size={18} className="text-primary shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="text-white font-semibold text-sm">{item.title}</h4>
+                      <h4 className="text-text font-semibold text-sm">{item.title}</h4>
                       <p className="text-textMuted text-xs mt-1 leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
@@ -105,8 +105,8 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
             </div>
 
             {/* Quick Contact Widget */}
-            <div className="glass-panel rounded-3xl p-6 border border-white/5 text-center space-y-4">
-              <h4 className="font-bold text-white text-sm">Want to speak to a sourcing specialist?</h4>
+            <div className="glass-panel rounded-3xl p-6 border border-border text-center space-y-4">
+              <h4 className="font-bold text-text text-sm">Want to speak to a sourcing specialist?</h4>
               <p className="text-textMuted text-xs">
                 Call our Heywood showroom directly. Tell us what you are looking for over the phone.
               </p>
@@ -114,7 +114,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                 <a href={`tel:${DEALERSHIP_DETAILS.phone}`} className="text-primary font-bold hover:underline text-sm">
                   {DEALERSHIP_DETAILS.phone}
                 </a>
-                <span className="text-white/10">|</span>
+                <span className="text-border">|</span>
                 <a href={`mailto:${DEALERSHIP_DETAILS.email}`} className="text-primary font-bold hover:underline text-sm">
                   {DEALERSHIP_DETAILS.email}
                 </a>
@@ -123,21 +123,21 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
           </div>
 
           {/* Sourcing Form Card */}
-          <div className="lg:col-span-7 glass-panel rounded-3xl p-6 md:p-8 border border-white/5">
+          <div className="lg:col-span-7 glass-panel rounded-3xl p-6 md:p-8 border border-border">
             {formSubmitted ? (
               <div className="py-20 text-center space-y-6">
                 <div className="w-16 h-16 bg-green-500/20 border border-green-500/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                   <CheckCircle2 size={32} />
                 </div>
-                <h3 className="text-3xl font-bold text-white">Sourcing Request Sent!</h3>
+                <h3 className="text-3xl font-bold text-text">Sourcing Request Sent!</h3>
                 <p className="text-textMuted text-sm max-w-md mx-auto leading-relaxed">
-                  Thanks, <span className="text-white font-medium">{formData.name}</span>. We've received your vehicle specification request. We will query our dealer channels and contact you at <span className="text-white font-medium">{formData.phone}</span> within 24 hours.
+                  Thanks, <span className="text-text font-medium">{formData.name}</span>. We've received your vehicle specification request. We will query our dealer channels and contact you at <span className="text-text font-medium">{formData.phone}</span> within 24 hours.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-white">Vehicle Finder Request Form</h3>
+                  <h3 className="text-xl font-bold text-text">Vehicle Finder Request Form</h3>
                   <p className="text-textMuted text-xs mt-1">Please provide the exact specifications of the car you are looking for.</p>
                 </div>
 
@@ -153,7 +153,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                         placeholder="e.g. Audi, Volkswagen"
                         value={formData.make}
                         onChange={handleInputChange}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all font-medium"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all font-medium"
                       />
                     </div>
                     <div className="space-y-1">
@@ -165,7 +165,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                         placeholder="e.g. A3, Golf"
                         value={formData.model}
                         onChange={handleInputChange}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all font-medium"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all font-medium"
                       />
                     </div>
                   </div>
@@ -179,7 +179,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                         placeholder="e.g. 2018"
                         value={formData.minYear}
                         onChange={handleInputChange}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       />
                     </div>
                     <div className="space-y-1">
@@ -188,7 +188,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                         name="transmission"
                         value={formData.transmission}
                         onChange={handleInputChange}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       >
                         <option value="">Any Transmission</option>
                         <option value="Manual">Manual</option>
@@ -201,7 +201,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                         name="fuelType"
                         value={formData.fuelType}
                         onChange={handleInputChange}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       >
                         <option value="">Any Fuel</option>
                         <option value="Petrol">Petrol</option>
@@ -221,7 +221,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                         placeholder="e.g. 50,000 miles"
                         value={formData.maxMileage}
                         onChange={handleInputChange}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       />
                     </div>
                     <div className="space-y-1">
@@ -233,7 +233,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                         placeholder="e.g. £15,000"
                         value={formData.budget}
                         onChange={handleInputChange}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all font-medium"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all font-medium"
                       />
                     </div>
                   </div>
@@ -246,12 +246,12 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                       placeholder="e.g. Heated seats, leather interior, specific color preference..."
                       value={formData.notes}
                       onChange={handleInputChange}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                     ></textarea>
                   </div>
 
-                  <div className="border-t border-white/5 pt-6 mt-6 space-y-4">
-                    <h4 className="text-white font-semibold text-sm">Your Contact Details</h4>
+                  <div className="border-t border-border pt-6 mt-6 space-y-4">
+                    <h4 className="text-text font-semibold text-sm">Your Contact Details</h4>
                     <div className="space-y-3">
                       <div className="space-y-1">
                         <label className="text-xs text-textMuted font-semibold uppercase">Full Name</label>
@@ -262,7 +262,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                           placeholder="John Doe"
                           value={formData.name}
                           onChange={handleInputChange}
-                          className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                          className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                         />
                       </div>
 
@@ -276,7 +276,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                             placeholder="john@example.com"
                             value={formData.email}
                             onChange={handleInputChange}
-                            className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                            className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                           />
                         </div>
                         <div className="space-y-1">
@@ -288,7 +288,7 @@ export function SourcingPage({ onNavigateToShowroom }: SourcingPageProps) {
                             placeholder="07800 000000"
                             value={formData.phone}
                             onChange={handleInputChange}
-                            className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                            className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                           />
                         </div>
                       </div>

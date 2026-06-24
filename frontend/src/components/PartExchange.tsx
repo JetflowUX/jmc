@@ -15,7 +15,7 @@ export function PartExchange() {
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-serif font-normal text-text mb-6">
               Upgrade Your Drive
             </h2>
             <p className="text-textMuted text-lg mb-8">
@@ -24,15 +24,15 @@ export function PartExchange() {
             </p>
 
             <ul className="space-y-4 mb-10">
-              <li className="flex items-center gap-3 text-white/80">
+              <li className="flex items-center gap-3 text-text/80">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 Guaranteed competitive valuations
               </li>
-              <li className="flex items-center gap-3 text-white/80">
+              <li className="flex items-center gap-3 text-text/80">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 Settle outstanding finance
               </li>
-              <li className="flex items-center gap-3 text-white/80">
+              <li className="flex items-center gap-3 text-text/80">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 Seamless transition to your new car
               </li>
@@ -40,14 +40,14 @@ export function PartExchange() {
           </div>
 
           <div className="glass-panel p-8 md:p-10 rounded-3xl relative">
-            <div className="absolute -top-6 -right-6 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
+            <div className="absolute -top-6 -right-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl" />
 
             <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center border border-primary/30">
+              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20">
                 <Calculator className="text-primary" size={24} />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-white">
+                <h3 className="text-xl font-semibold text-text">
                   Instant Valuation
                 </h3>
                 <p className="text-sm text-textMuted">
@@ -80,7 +80,7 @@ export function PartExchange() {
                 <input
                   type="text"
                   placeholder="e.g. 45,000"
-                  className="w-full bg-surface border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-primary transition-colors" />
+                  className="w-full bg-surface border border-border rounded-xl px-4 py-4 text-text focus:outline-none focus:border-primary transition-colors" />
                 
               </div>
 

@@ -16,6 +16,17 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   const servicesLinks = [
     { name: 'Part Exchange', href: '#/part-exchange' },
     { name: 'Vehicle Sourcing', href: '#/sourcing' },
@@ -32,7 +43,7 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-background/80 backdrop-blur-lg border-b border-white/5 py-4' : 'bg-transparent py-6'
+        isScrolled ? 'bg-background/80 backdrop-blur-lg border-b border-border py-4' : 'bg-transparent py-6'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
@@ -41,21 +52,21 @@ export function Navbar() {
           <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
             <span className="font-bold text-white tracking-wider">JMC</span>
           </div>
-          <span className="font-semibold text-xl tracking-wide text-white">MOTORS</span>
+          <span className="font-semibold text-xl tracking-wide text-text">MOTORS</span>
         </a>
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-8 z-50">
           <a
             href="#/showroom"
-            className="text-sm font-medium text-textMuted hover:text-white transition-colors"
+            className="text-sm font-medium text-textMuted hover:text-primary transition-colors"
           >
             Showroom
           </a>
 
           <a
             href="#/soft-credit-checker"
-            className="text-sm font-medium text-textMuted hover:text-white transition-colors"
+            className="text-sm font-medium text-textMuted hover:text-primary transition-colors"
           >
             Finance Checker
           </a>
@@ -66,7 +77,7 @@ export function Navbar() {
             onMouseEnter={() => setActiveDropdown('services')}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button className="text-sm font-medium text-textMuted hover:text-white transition-colors flex items-center gap-1 cursor-pointer">
+            <button className="text-sm font-medium text-textMuted hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
               Services <ChevronDown size={14} className={`transition-transform duration-200 ${activeDropdown === 'services' ? 'rotate-180' : ''}`} />
             </button>
             <AnimatePresence>
@@ -76,13 +87,13 @@ export function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute left-0 mt-2 w-52 glass-panel rounded-2xl p-2 border border-white/10 z-50"
+                  className="absolute left-0 mt-2 w-52 glass-panel rounded-2xl p-2 border border-border z-50"
                 >
                   {servicesLinks.map((link) => (
                     <a
                       key={link.name}
                       href={link.href}
-                      className="block text-xs font-semibold text-textMuted hover:text-white hover:bg-white/5 px-4 py-2.5 rounded-xl transition-all"
+                      className="block text-xs font-semibold text-textMuted hover:text-primary hover:bg-surfaceHighlight px-4 py-2.5 rounded-xl transition-all"
                     >
                       {link.name}
                     </a>
@@ -98,7 +109,7 @@ export function Navbar() {
             onMouseEnter={() => setActiveDropdown('about')}
             onMouseLeave={() => setActiveDropdown(null)}
           >
-            <button className="text-sm font-medium text-textMuted hover:text-white transition-colors flex items-center gap-1 cursor-pointer">
+            <button className="text-sm font-medium text-textMuted hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
               About <ChevronDown size={14} className={`transition-transform duration-200 ${activeDropdown === 'about' ? 'rotate-180' : ''}`} />
             </button>
             <AnimatePresence>
@@ -108,13 +119,13 @@ export function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute left-0 mt-2 w-52 glass-panel rounded-2xl p-2 border border-white/10 z-50"
+                  className="absolute left-0 mt-2 w-52 glass-panel rounded-2xl p-2 border border-border z-50"
                 >
                   {aboutLinks.map((link) => (
                     <a
                       key={link.name}
                       href={link.href}
-                      className="block text-xs font-semibold text-textMuted hover:text-white hover:bg-white/5 px-4 py-2.5 rounded-xl transition-all"
+                      className="block text-xs font-semibold text-textMuted hover:text-primary hover:bg-surfaceHighlight px-4 py-2.5 rounded-xl transition-all"
                     >
                       {link.name}
                     </a>
@@ -127,18 +138,18 @@ export function Navbar() {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-6 z-50">
-          <a href={`tel:${DEALERSHIP_DETAILS.phone}`} className="flex items-center gap-2 text-sm text-textMuted hover:text-white transition-colors">
+          <a href={`tel:${DEALERSHIP_DETAILS.phone}`} className="flex items-center gap-2 text-sm text-textMuted hover:text-primary transition-colors">
             <Phone size={16} className="text-primary animate-pulse" />
             <span>{DEALERSHIP_DETAILS.phone}</span>
           </a>
-          <a href="#/servicing" className="bg-white text-black hover:bg-gray-200 px-5 py-2.5 rounded-full text-sm font-medium transition-colors">
+          <a href="#/servicing" className="bg-transparent text-text hover:bg-surfaceHighlight border border-border px-5 py-2.5 rounded-full text-sm font-medium transition-colors">
             Book Service
           </a>
         </div>
 
         {/* Mobile Menu Toggle */}
         <button
-          className="lg:hidden z-50 text-white"
+          className="lg:hidden z-50 text-text"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -158,7 +169,7 @@ export function Navbar() {
               <a
                 href="#/showroom"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-xl font-bold text-white hover:text-primary transition-colors"
+                className="block text-xl font-bold text-text hover:text-primary transition-colors"
               >
                 Showroom
               </a>
@@ -166,13 +177,13 @@ export function Navbar() {
               <a
                 href="#/soft-credit-checker"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-xl font-bold text-white hover:text-primary transition-colors"
+                className="block text-xl font-bold text-text hover:text-primary transition-colors"
               >
                 Finance Checker
               </a>
             </div>
 
-            <div className="border-t border-white/5 pt-4">
+            <div className="border-t border-border pt-4">
               <span className="text-[10px] text-textMuted font-bold uppercase tracking-wider block mb-2">Our Services</span>
               <div className="space-y-2">
                 {servicesLinks.map((link) => (
@@ -180,7 +191,7 @@ export function Navbar() {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block text-base font-semibold text-textMuted hover:text-white pl-2 border-l border-white/10"
+                    className="block text-base font-semibold text-textMuted hover:text-primary pl-2 border-l border-border"
                   >
                     {link.name}
                   </a>
@@ -188,7 +199,7 @@ export function Navbar() {
               </div>
             </div>
 
-            <div className="border-t border-white/5 pt-4">
+            <div className="border-t border-border pt-4">
               <span className="text-[10px] text-textMuted font-bold uppercase tracking-wider block mb-2">About us</span>
               <div className="space-y-2">
                 {aboutLinks.map((link) => (
@@ -196,7 +207,7 @@ export function Navbar() {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block text-base font-semibold text-textMuted hover:text-white pl-2 border-l border-white/10"
+                    className="block text-base font-semibold text-textMuted hover:text-primary pl-2 border-l border-border"
                   >
                     {link.name}
                   </a>
@@ -204,8 +215,8 @@ export function Navbar() {
               </div>
             </div>
 
-            <div className="border-t border-white/5 pt-6 mt-auto pb-8 space-y-4 flex flex-col items-center">
-              <a href={`tel:${DEALERSHIP_DETAILS.phone}`} className="flex items-center gap-2 text-textMuted text-lg hover:text-white">
+            <div className="border-t border-border pt-6 mt-auto pb-8 space-y-4 flex flex-col items-center">
+              <a href={`tel:${DEALERSHIP_DETAILS.phone}`} className="flex items-center gap-2 text-textMuted text-lg hover:text-primary">
                 <Phone size={18} className="text-primary" />
                 <span>{DEALERSHIP_DETAILS.phone}</span>
               </a>

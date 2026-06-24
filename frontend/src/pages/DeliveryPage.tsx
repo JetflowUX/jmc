@@ -67,7 +67,7 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
         <div className="mb-8">
           <button
             onClick={onNavigateToShowroom}
-            className="text-textMuted hover:text-white transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
+            className="text-textMuted hover:text-primary transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
           >
             <ArrowLeft size={16} /> Back to Showroom
           </button>
@@ -78,7 +78,7 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
           <span className="text-xs text-primary font-bold uppercase tracking-wider bg-primary/10 border border-primary/20 px-3 py-1 rounded-full inline-flex items-center gap-1.5">
             <Truck size={12} /> JMC Delivery
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Nationwide Home Delivery</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-light text-text tracking-tight">Nationwide Home Delivery</h1>
           <p className="text-textMuted text-lg">
             From our showroom floor straight to your door. We provide premium, safe vehicle transport options across the UK mainland.
           </p>
@@ -87,18 +87,18 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Sourcing Info Panel */}
           <div className="lg:col-span-7 space-y-8">
-            <div className="glass-panel rounded-3xl p-8 border border-white/5 space-y-6">
-              <h2 className="text-2xl font-bold text-white">How Our Delivery Service Works</h2>
+            <div className="glass-panel rounded-3xl p-8 border border-border space-y-6">
+              <h2 className="text-2xl font-bold text-text">How Our Delivery Service Works</h2>
               <p className="text-textMuted text-sm leading-relaxed">
                 Whether you live just down the road or on the other side of the country, JMC Motors makes buying a car from home easy and stress-free. We coordinate the entire process in-house.
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border">
                 <div className="space-y-2">
                   <div className="w-10 h-10 bg-primary/10 border border-primary/20 text-primary rounded-xl flex items-center justify-center">
                     <MapPin size={20} />
                   </div>
-                  <h4 className="text-white font-semibold text-sm">Flexible Transport Options</h4>
+                  <h4 className="text-text font-semibold text-sm">Flexible Transport Options</h4>
                   <p className="text-textMuted text-xs leading-relaxed">
                     Vehicles are transported using professional trailers or driven by fully insured JMC delivery drivers.
                   </p>
@@ -107,15 +107,15 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
                   <div className="w-10 h-10 bg-primary/10 border border-primary/20 text-primary rounded-xl flex items-center justify-center">
                     <ShieldCheck size={20} />
                   </div>
-                  <h4 className="text-white font-semibold text-sm">Insured & Checked</h4>
+                  <h4 className="text-text font-semibold text-sm">Insured & Checked</h4>
                   <p className="text-textMuted text-xs leading-relaxed">
                     Every delivered vehicle undergoes a final multi-point preparation check and is fully covered by carrier insurance.
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-4 pt-6 border-t border-white/5">
-                <h3 className="text-lg font-bold text-white">Part-Exchange Collection</h3>
+              <div className="space-y-4 pt-6 border-t border-border">
+                <h3 className="text-lg font-bold text-text">Part-Exchange Collection</h3>
                 <p className="text-textMuted text-sm leading-relaxed">
                   Trading in your old vehicle? We can collect your part-exchange car directly when we drop off your new one. We pay off any outstanding Loan or Hire Purchase (HP) agreements on the spot, bank-transferring any positive equity directly to your account.
                 </p>
@@ -123,8 +123,8 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
             </div>
 
             {/* Cost Calculator Card */}
-            <div className="glass-panel rounded-3xl p-8 border border-white/5 space-y-6">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <div className="glass-panel rounded-3xl p-8 border border-border space-y-6">
+              <h3 className="text-xl font-bold text-text flex items-center gap-2">
                 <Calculator size={20} className="text-primary" /> Delivery Cost Estimator
               </h3>
               <p className="text-textMuted text-xs">
@@ -141,7 +141,7 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
                     placeholder="e.g. 45"
                     value={distance}
                     onChange={(e) => setDistance(e.target.value)}
-                    className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all font-semibold"
+                    className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all font-semibold"
                   />
                 </div>
                 <button
@@ -153,9 +153,9 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
               </form>
 
               {calculatedFee !== null && (
-                <div className="bg-surfaceHighlight/40 border border-white/5 rounded-2xl p-5 text-center space-y-2 animate-fade-in">
+                <div className="bg-surfaceHighlight/40 border border-border rounded-2xl p-5 text-center space-y-2 animate-fade-in">
                   <span className="text-xs text-textMuted block font-semibold uppercase tracking-wider">Estimated Delivery Cost</span>
-                  <div className="text-3xl font-extrabold text-white">
+                  <div className="text-3xl font-extrabold text-text">
                     {calculatedFee === 0 ? 'FREE' : `£${calculatedFee}`}
                   </div>
                   <p className="text-[11px] text-textMuted leading-relaxed">
@@ -169,21 +169,21 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
           </div>
 
           {/* Sourcing Form Card */}
-          <div className="lg:col-span-5 glass-panel rounded-3xl p-6 border border-white/5">
+          <div className="lg:col-span-5 glass-panel rounded-3xl p-6 border border-border">
             {formSubmitted ? (
               <div className="py-16 text-center space-y-6">
                 <div className="w-16 h-16 bg-green-500/20 border border-green-500/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
                   <CheckCircle2 size={32} />
                 </div>
-                <h3 className="text-2xl font-bold text-white">Quote Request Logged</h3>
+                <h3 className="text-2xl font-bold text-text">Quote Request Logged</h3>
                 <p className="text-textMuted text-xs max-w-xs mx-auto leading-relaxed">
-                  Thank you, <span className="text-white font-medium">{formData.name}</span>. We have logged your delivery request for postcode <span className="text-white font-medium">{formData.postcode.toUpperCase()}</span>. We will verify carrier schedules and phone you at <span className="text-white font-medium">{formData.phone}</span>.
+                  Thank you, <span className="text-text font-medium">{formData.name}</span>. We have logged your delivery request for postcode <span className="text-text font-medium">{formData.postcode.toUpperCase()}</span>. We will verify carrier schedules and phone you at <span className="text-text font-medium">{formData.phone}</span>.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleEnquirySubmit} className="space-y-5">
                 <div>
-                  <h3 className="text-lg font-bold text-white">Request Delivery Quote</h3>
+                  <h3 className="text-lg font-bold text-text">Request Delivery Quote</h3>
                   <p className="text-textMuted text-xs mt-1">Get an exact quotation for transport schedules to your postcode.</p>
                 </div>
 
@@ -197,7 +197,7 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
                       placeholder="John Doe"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                     />
                   </div>
 
@@ -210,7 +210,7 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
                       placeholder="07800 000000"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                     />
                   </div>
 
@@ -223,7 +223,7 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
                       placeholder="john@example.com"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                     />
                   </div>
 
@@ -237,7 +237,7 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
                         placeholder="e.g. M1 1AA"
                         value={formData.postcode}
                         onChange={handleInputChange}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all uppercase font-semibold"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all uppercase font-semibold"
                       />
                     </div>
                     <div className="space-y-1">
@@ -248,7 +248,7 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
                         placeholder="e.g. Audi A3"
                         value={formData.targetCar}
                         onChange={handleInputChange}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       />
                     </div>
                   </div>
@@ -261,7 +261,7 @@ export function DeliveryPage({ onNavigateToShowroom }: DeliveryPageProps) {
                       placeholder="Let us know if you have a trade-in to collect, specific delivery dates, or access constraints..."
                       value={formData.notes}
                       onChange={handleInputChange}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all text-xs"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all text-xs"
                     ></textarea>
                   </div>
 

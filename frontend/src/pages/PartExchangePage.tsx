@@ -137,7 +137,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
         <div className="mb-8">
           <button
             onClick={onNavigateToShowroom}
-            className="text-textMuted hover:text-white transition-colors text-sm font-medium"
+            className="text-textMuted hover:text-primary transition-colors text-sm font-medium"
           >
             ← Back to Showroom
           </button>
@@ -145,7 +145,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
 
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Part Exchange Valuation</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-light text-text mb-4">Part Exchange Valuation</h1>
           <p className="text-textMuted text-lg max-w-2xl mx-auto">
             Get an instant, fair market estimate for your current car. Offset it directly against any vehicle in our showroom.
           </p>
@@ -153,9 +153,9 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
 
         {/* Valuation Loading State */}
         {appraising && (
-          <div className="glass-panel rounded-3xl p-12 text-center border border-white/5 space-y-6">
+          <div className="glass-panel rounded-3xl p-12 text-center border border-border space-y-6">
             <Loader2 size={48} className="text-primary animate-spin mx-auto" />
-            <h3 className="text-xl font-bold text-white">Appraising Your Vehicle...</h3>
+            <h3 className="text-xl font-bold text-text">Appraising Your Vehicle...</h3>
             <p className="text-textMuted text-sm max-w-sm mx-auto animate-pulse">
               {appraisalStepsText[appraisalStep]}
             </p>
@@ -171,24 +171,24 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
         {/* Valuation Success Result */}
         {!appraising && valuationResult && (
           <div className="space-y-8">
-            <div className="glass-panel rounded-3xl p-8 border border-white/5 text-center space-y-6 relative overflow-hidden">
+            <div className="glass-panel rounded-3xl p-8 border border-border text-center space-y-6 relative overflow-hidden">
               <div className="absolute -top-16 -left-16 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
 
-              <div className="w-16 h-16 bg-primary/20 border border-primary/30 text-primary rounded-full flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-primary/10 border border-primary/20 text-primary rounded-full flex items-center justify-center mx-auto">
                 <Sparkles size={30} />
               </div>
 
               <div>
                 <span className="text-xs text-textMuted uppercase font-bold tracking-wider">Instant Trade-in Valuation</span>
-                <h3 className="text-2xl font-bold text-white mt-1">
+                <h3 className="text-2xl font-bold text-text mt-1">
                   Your {valuationResult.make} {valuationResult.model}
                 </h3>
-                <p className="text-sm text-textMuted mt-1">Registration: <span className="text-white font-bold">{regNumber.toUpperCase()}</span></p>
+                <p className="text-sm text-textMuted mt-1">Registration: <span className="text-text font-bold">{regNumber.toUpperCase()}</span></p>
               </div>
 
               {/* Price bracket */}
-              <div className="max-w-md mx-auto bg-surfaceHighlight/50 border border-white/5 rounded-2xl p-6 space-y-2">
+              <div className="max-w-md mx-auto bg-surfaceHighlight/50 border border-border rounded-2xl p-6 space-y-2">
                 <span className="text-xs text-textMuted uppercase font-medium block">Estimated Trade-in Value</span>
                 <span className="text-4xl md:text-5xl font-black text-primary">
                   £{valuationResult.recommended.toLocaleString()}
@@ -201,20 +201,20 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
               {/* Offset calculation if buying target vehicle */}
               {targetVehicle && (
                 <div className="max-w-md mx-auto bg-primary/10 border border-primary/20 rounded-2xl p-6 text-left space-y-4">
-                  <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                  <h4 className="font-bold text-text text-sm flex items-center gap-2">
                     <Car size={16} className="text-primary" /> Offset Comparison
                   </h4>
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between">
                       <span className="text-textMuted">Selected Vehicle Cash Price</span>
-                      <span className="text-white font-semibold">£{targetVehicle.price.toLocaleString()}</span>
+                      <span className="text-text font-semibold">£{targetVehicle.price.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-textMuted">Less Part-Exchange Allowance</span>
-                      <span className="text-green-500 font-semibold">-£{valuationResult.recommended.toLocaleString()}</span>
+                      <span className="text-green-600 font-semibold">-£{valuationResult.recommended.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between border-t border-white/10 pt-2.5 font-bold text-sm">
-                      <span className="text-white">Net Balance to Pay</span>
+                    <div className="flex justify-between border-t border-border pt-2.5 font-bold text-sm">
+                      <span className="text-text">Net Balance to Pay</span>
                       <span className="text-primary">£{Math.max(targetVehicle.price - valuationResult.recommended, 0).toLocaleString()}</span>
                     </div>
                   </div>
@@ -232,7 +232,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
               <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   onClick={resetValuation}
-                  className="bg-surfaceHighlight border border-white/10 hover:bg-white/10 text-white px-8 py-3.5 rounded-xl text-sm font-semibold transition-colors"
+                  className="border border-border text-text hover:bg-surfaceHighlight/50 px-8 py-3.5 rounded-xl text-sm font-semibold transition-colors"
                 >
                   Value Another Car
                 </button>
@@ -257,8 +257,8 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
         {!appraising && !valuationResult && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* Form */}
-            <div className="lg:col-span-2 glass-panel rounded-3xl p-6 md:p-8 border border-white/5 space-y-6">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <div className="lg:col-span-2 glass-panel rounded-3xl p-6 md:p-8 border border-border space-y-6">
+              <h3 className="text-xl font-bold text-text flex items-center gap-2">
                 <Calculator size={20} className="text-primary" /> Appraisal Details
               </h3>
 
@@ -272,7 +272,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
                       placeholder="e.g. FP69EXT"
                       value={regNumber}
                       onChange={(e) => setRegNumber(e.target.value)}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white uppercase focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold tracking-widest placeholder:normal-case placeholder:font-normal placeholder:tracking-normal"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text uppercase focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-bold tracking-widest placeholder:normal-case placeholder:font-normal placeholder:tracking-normal"
                     />
                   </div>
                   <div className="space-y-1">
@@ -284,7 +284,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
                         placeholder="e.g. 35000"
                         value={mileage}
                         onChange={(e) => setMileage(e.target.value)}
-                        className="w-full bg-background border border-white/10 rounded-xl pl-4 pr-12 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-surface border border-border rounded-xl pl-4 pr-12 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-textMuted">miles</span>
                     </div>
@@ -304,7 +304,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
                         key={cond.id}
                         type="button"
                         onClick={() => setCondition(cond.id)}
-                        className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${condition === cond.id ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 bg-background hover:bg-surfaceHighlight text-white'}`}
+                        className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${condition === cond.id ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-surface hover:bg-surfaceHighlight text-text'}`}
                       >
                         <span className="text-xs font-bold">{cond.title}</span>
                         <span className="text-[10px] text-textMuted mt-1 leading-tight">{cond.subtitle}</span>
@@ -313,8 +313,8 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
                   </div>
                 </div>
 
-                <div className="border-t border-white/5 pt-6 mt-6 space-y-4">
-                  <h4 className="text-white font-semibold text-sm">Your Contact Information</h4>
+                <div className="border-t border-border pt-6 mt-6 space-y-4">
+                  <h4 className="text-text font-semibold text-sm">Your Contact Information</h4>
                   <div className="space-y-3">
                     <div className="space-y-1">
                       <label className="text-xs text-textMuted font-semibold uppercase">Full Name</label>
@@ -324,7 +324,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
                         placeholder="John Doe"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                       />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -336,7 +336,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
                           placeholder="john@example.com"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                          className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                         />
                       </div>
                       <div className="space-y-1">
@@ -347,7 +347,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
                           placeholder="e.g. 07800 000000"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          className="w-full bg-background border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                          className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
                         />
                       </div>
                     </div>
@@ -367,18 +367,18 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
             <div className="space-y-6">
               {/* Selected Target Vehicle details */}
               {targetVehicle && (
-                <div className="glass-panel rounded-3xl p-6 border border-white/5 space-y-4">
-                  <h4 className="font-bold text-white text-sm">Trading-in For</h4>
+                <div className="glass-panel rounded-3xl p-6 border border-border space-y-4">
+                  <h4 className="font-bold text-text text-sm">Trading-in For</h4>
                   <div className="flex gap-4 items-center">
                     <img src={targetVehicle.images[0]} className="w-16 h-12 object-cover rounded-lg" alt="Target car" />
                     <div>
-                      <h5 className="font-bold text-white text-sm">{targetVehicle.title}</h5>
+                      <h5 className="font-bold text-text text-sm">{targetVehicle.title}</h5>
                       <span className="text-xs font-bold text-primary">£{targetVehicle.price.toLocaleString()}</span>
                     </div>
                   </div>
                   <button
                     onClick={() => onNavigateToVehicle(targetVehicle.id)}
-                    className="w-full text-center text-xs font-semibold text-textMuted hover:text-white transition-colors underline decoration-white/30 underline-offset-4"
+                    className="w-full text-center text-xs font-semibold text-textMuted hover:text-primary transition-colors underline decoration-text/30 underline-offset-4"
                   >
                     View Details Page
                   </button>
@@ -386,8 +386,8 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
               )}
 
               {/* Core promises card */}
-              <div className="glass-panel rounded-3xl p-6 border border-white/5 space-y-4">
-                <h4 className="font-bold text-white text-sm">Valuation Guarantees</h4>
+              <div className="glass-panel rounded-3xl p-6 border border-border space-y-4">
+                <h4 className="font-bold text-text text-sm">Valuation Guarantees</h4>
                 <div className="space-y-3.5 text-xs text-textMuted">
                   <div className="flex items-start gap-2.5">
                     <BadgeCheck size={16} className="text-primary shrink-0 mt-0.5" />

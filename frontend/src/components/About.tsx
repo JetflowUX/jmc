@@ -22,18 +22,18 @@ export function About() {
               
             </div>
 
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 glass-panel p-6 rounded-2xl z-20 text-center w-48">
-              <span className="block text-4xl font-bold text-white mb-1">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 glass-panel p-4 sm:p-6 rounded-2xl z-20 text-center w-36 sm:w-48">
+              <span className="block text-2xl sm:text-4xl font-bold text-text mb-1">
                 15+
               </span>
-              <span className="text-sm text-textMuted">
+              <span className="text-xs sm:text-sm text-textMuted">
                 Years of Excellence
               </span>
             </div>
           </div>
 
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-serif font-light text-text mb-6">
               The JMC Standard
             </h2>
             <p className="text-textMuted text-lg mb-6 leading-relaxed">
@@ -57,12 +57,12 @@ export function About() {
               map((item, index) =>
               <div key={index} className="flex items-center gap-3">
                   <CheckCircle2 size={20} className="text-primary shrink-0" />
-                  <span className="text-white/90 font-medium">{item}</span>
+                  <span className="text-text/90 font-medium">{item}</span>
                 </div>
               )}
             </div>
 
-            <button className="glass-panel hover:bg-white/10 text-white px-8 py-4 rounded-full font-medium transition-all">
+            <button className="border border-border text-text hover:bg-surfaceHighlight/50 px-8 py-4 rounded-full font-medium transition-all">
               Discover Our Story
             </button>
           </div>

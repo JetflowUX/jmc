@@ -35,12 +35,12 @@ export function Reviews() {
   return (
     <section className="py-24 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-6 md:px-12 mb-12 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+        <h2 className="text-3xl md:text-4xl font-serif font-normal text-text mb-6">
           What Our Clients Say
         </h2>
         <div className="flex flex-wrap justify-center gap-6 items-center">
-          <div className="flex items-center gap-2 bg-surface px-4 py-2 rounded-full border border-white/10">
-            <span className="font-bold text-white">4.9/5</span>
+          <div className="flex items-center gap-2 bg-surface px-4 py-2 rounded-full border border-border">
+            <span className="font-bold text-text">4.9/5</span>
             <div className="flex text-yellow-500">
               {[...Array(5)].map((_, i) =>
               <Star key={i} size={14} fill="currentColor" />
@@ -48,8 +48,8 @@ export function Reviews() {
             </div>
             <span className="text-sm text-textMuted">Google</span>
           </div>
-          <div className="flex items-center gap-2 bg-surface px-4 py-2 rounded-full border border-white/10">
-            <span className="font-bold text-white">5.0/5</span>
+          <div className="flex items-center gap-2 bg-surface px-4 py-2 rounded-full border border-border">
+            <span className="font-bold text-text">5.0/5</span>
             <div className="flex text-green-500">
               {[...Array(5)].map((_, i) =>
               <Star key={i} size={14} fill="currentColor" />
@@ -57,8 +57,8 @@ export function Reviews() {
             </div>
             <span className="text-sm text-textMuted">Trustpilot</span>
           </div>
-          <div className="flex items-center gap-2 bg-surface px-4 py-2 rounded-full border border-white/10">
-            <span className="font-bold text-white">4.8/5</span>
+          <div className="flex items-center gap-2 bg-surface px-4 py-2 rounded-full border border-border">
+            <span className="font-bold text-text">4.8/5</span>
             <div className="flex text-blue-500">
               {[...Array(5)].map((_, i) =>
               <Star key={i} size={14} fill="currentColor" />
@@ -77,7 +77,7 @@ export function Reviews() {
         <motion.div
           className="flex gap-6 px-6"
           animate={{
-            x: [0, -1000]
+            x: ["0%", "-50%"]
           }}
           transition={{
             repeat: Infinity,
@@ -85,21 +85,21 @@ export function Reviews() {
             duration: 20
           }}>
           
-          {/* Duplicate reviews for seamless looping */}
-          {[...reviews, ...reviews, ...reviews].map((review, index) =>
+          {/* Duplicate reviews exactly once for seamless relative loop */}
+          {[...reviews, ...reviews].map((review, index) =>
           <div
             key={index}
             className="glass-panel p-8 rounded-2xl min-w-[350px] md:min-w-[400px] flex-shrink-0">
             
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h4 className="text-lg font-semibold text-white">
+                  <h4 className="text-lg font-semibold text-text">
                     {review.name}
                   </h4>
                   <p className="text-sm text-textMuted">{review.date}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <span className="text-xs font-medium px-2 py-1 bg-surfaceHighlight rounded text-white/80">
+                  <span className="text-xs font-medium px-2 py-1 bg-surfaceHighlight rounded text-textMuted">
                     {review.platform}
                   </span>
                   <div className="flex text-primary">

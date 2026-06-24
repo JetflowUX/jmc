@@ -46,7 +46,7 @@ export function FeaturedVehicles({ onSelectVehicle }: FeaturedVehiclesProps) {
     <section className="py-24 max-w-7xl mx-auto px-6 md:px-12" id="showroom">
       <div className="flex justify-between items-end mb-12">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-serif font-normal text-text mb-4">
             Featured Vehicles
           </h2>
           <p className="text-textMuted text-lg font-medium">
@@ -55,7 +55,7 @@ export function FeaturedVehicles({ onSelectVehicle }: FeaturedVehiclesProps) {
         </div>
         <a
           href="#/showroom"
-          className="hidden md:flex items-center gap-2 text-white hover:text-primary transition-colors font-bold"
+          className="hidden md:flex items-center gap-2 text-text hover:text-primary transition-colors font-bold"
         >
           View All Vehicles <ChevronRight size={20} />
         </a>
@@ -76,12 +76,12 @@ export function FeaturedVehicles({ onSelectVehicle }: FeaturedVehiclesProps) {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               whileHover={{ y: -10 }}
               onClick={() => onSelectVehicle(vehicle.id)}
-              className="group bg-surface rounded-2xl overflow-hidden border border-white/5 hover:border-primary/30 transition-all duration-300 shadow-lg hover:shadow-glow flex flex-col justify-between cursor-pointer"
+              className="group bg-surface rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300 shadow-lg hover:shadow-glow flex flex-col justify-between cursor-pointer"
             >
               <div>
-                <div className="relative h-60 overflow-hidden bg-black flex items-center justify-center">
-                  <div className="absolute top-4 left-4 z-10 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
-                    <span className="text-[10px] font-semibold text-white uppercase tracking-wider">
+                <div className="relative h-60 overflow-hidden bg-background flex items-center justify-center">
+                  <div className="absolute top-4 left-4 z-10 bg-background/90 backdrop-blur-md px-3 py-1 rounded-full border border-border">
+                    <span className="text-[10px] font-semibold text-text uppercase tracking-wider">
                       Newly Added
                     </span>
                   </div>
@@ -96,19 +96,19 @@ export function FeaturedVehicles({ onSelectVehicle }: FeaturedVehiclesProps) {
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors leading-tight">
+                      <h3 className="text-xl font-bold text-text group-hover:text-primary transition-colors leading-tight">
                         {vehicle.make}
                       </h3>
                       <p className="text-xs text-textMuted mt-0.5 line-clamp-1">{vehicle.model} - {vehicle.subtitle}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-xl font-extrabold text-white">
+                      <p className="text-xl font-extrabold text-text">
                         £{vehicle.price.toLocaleString()}
                       </p>
                     </div>
                   </div>
 
-                  <div className="bg-surfaceHighlight rounded-xl p-4 mb-6 mt-4 flex justify-between items-center border border-white/5">
+                  <div className="bg-surfaceHighlight rounded-xl p-4 mb-6 mt-4 flex justify-between items-center border border-border">
                     <div>
                       <p className="text-[10px] text-textMuted mb-0.5 leading-none">Finance from</p>
                       <p className="text-base font-bold text-primary">
@@ -116,33 +116,33 @@ export function FeaturedVehicles({ onSelectVehicle }: FeaturedVehiclesProps) {
                         <span className="text-[10px] font-normal text-textMuted"> /mo</span>
                       </p>
                     </div>
-                    <span className="text-xs font-semibold text-white hover:text-primary transition-all underline decoration-white/30 underline-offset-4">
+                    <span className="text-xs font-semibold text-text hover:text-primary transition-all underline decoration-textMuted underline-offset-4">
                       Quote Calculator
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3 mb-6">
-                    <div className="flex flex-col items-center justify-center p-2.5 bg-surfaceHighlight rounded-xl border border-white/5 text-center">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-3 mb-6">
+                    <div className="flex flex-col items-center justify-center p-1.5 sm:p-2.5 bg-surfaceHighlight rounded-xl border border-border text-center">
                       <Gauge size={16} className="text-textMuted mb-1" />
-                      <span className="text-[10px] font-bold text-white truncate max-w-full">
+                      <span className="text-[10px] font-bold text-text truncate max-w-full">
                         {vehicle.mileage}
                       </span>
                     </div>
-                    <div className="flex flex-col items-center justify-center p-2.5 bg-surfaceHighlight rounded-xl border border-white/5 text-center">
+                    <div className="flex flex-col items-center justify-center p-1.5 sm:p-2.5 bg-surfaceHighlight rounded-xl border border-border text-center">
                       <Calendar size={16} className="text-textMuted mb-1" />
-                      <span className="text-[10px] font-bold text-white truncate max-w-full">
+                      <span className="text-[10px] font-bold text-text truncate max-w-full">
                         {vehicle.year}
                       </span>
                     </div>
-                    <div className="flex flex-col items-center justify-center p-2.5 bg-surfaceHighlight rounded-xl border border-white/5 text-center">
+                    <div className="flex flex-col items-center justify-center p-1.5 sm:p-2.5 bg-surfaceHighlight rounded-xl border border-border text-center">
                       <Fuel size={16} className="text-textMuted mb-1" />
-                      <span className="text-[10px] font-bold text-white truncate max-w-full">
+                      <span className="text-[10px] font-bold text-text truncate max-w-full">
                         {vehicle.fuel}
                       </span>
                     </div>
                   </div>
 
-                  <button className="w-full bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-semibold transition-colors border border-white/10 text-sm">
+                  <button className="w-full bg-transparent hover:bg-surfaceHighlight text-text py-3 rounded-xl font-semibold transition-colors border border-border text-sm">
                     View Details
                   </button>
                 </div>
@@ -155,7 +155,7 @@ export function FeaturedVehicles({ onSelectVehicle }: FeaturedVehiclesProps) {
       <div className="mt-12 text-center md:hidden">
         <a
           href="#/showroom"
-          className="inline-flex items-center gap-2 text-white hover:text-primary transition-colors font-bold"
+          className="inline-flex items-center gap-2 text-text hover:text-primary transition-colors font-bold"
         >
           View All Vehicles <ChevronRight size={20} />
         </a>

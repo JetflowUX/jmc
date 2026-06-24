@@ -25,7 +25,7 @@ export function FinanceJourney() {
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-serif font-normal text-text mb-6">
               Seamless Finance Journey
             </h2>
             <p className="text-textMuted text-lg mb-12">
@@ -36,7 +36,7 @@ export function FinanceJourney() {
 
             <div className="space-y-8 relative">
               {/* Vertical Line */}
-              <div className="absolute left-7 top-7 bottom-7 w-0.5 bg-white/10" />
+              <div className="absolute left-7 top-7 bottom-7 w-0.5 bg-border" />
 
               {/* Active Line Progress */}
               <motion.div
@@ -59,13 +59,13 @@ export function FinanceJourney() {
                 onClick={() => setActiveStep(index)}>
                 
                   <div
-                  className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 z-10 transition-colors duration-300 ${activeStep === index ? 'bg-primary text-white shadow-glow' : 'bg-surfaceHighlight text-textMuted border border-white/10'}`}>
+                  className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 z-10 transition-colors duration-300 ${activeStep === index ? 'bg-primary text-white shadow-glow' : 'bg-surfaceHighlight text-textMuted border border-border'}`}>
                   
                     <step.icon size={24} />
                   </div>
                   <div className="pt-3">
                     <h3
-                    className={`text-xl font-semibold mb-2 transition-colors ${activeStep === index ? 'text-white' : 'text-textMuted'}`}>
+                    className={`text-xl font-semibold mb-2 transition-colors ${activeStep === index ? 'text-text' : 'text-textMuted'}`}>
                     
                       {step.title}
                     </h3>
@@ -93,31 +93,31 @@ export function FinanceJourney() {
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
             <div className="absolute bottom-0 left-0 w-full p-10">
-              <div className="glass-panel p-6 rounded-2xl backdrop-blur-xl bg-black/40">
-                <h4 className="text-white font-semibold mb-4">
+              <div className="glass-panel p-6 rounded-2xl backdrop-blur-xl bg-surface/90 border border-border shadow-glass">
+                <h4 className="text-text font-semibold mb-4">
                   Representative Example
                 </h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-textMuted mb-1">Vehicle Price</p>
-                    <p className="text-white font-medium">£45,000</p>
+                    <p className="text-text font-medium">£45,000</p>
                   </div>
                   <div>
                     <p className="text-textMuted mb-1">Deposit</p>
-                    <p className="text-white font-medium">£5,000</p>
+                    <p className="text-text font-medium">£5,000</p>
                   </div>
                   <div>
                     <p className="text-textMuted mb-1">Term</p>
-                    <p className="text-white font-medium">48 Months</p>
+                    <p className="text-text font-medium">48 Months</p>
                   </div>
                   <div>
                     <p className="text-textMuted mb-1">APR</p>
                     <p className="text-primary font-medium">8.9%</p>
                   </div>
                 </div>
-                <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-center">
+                <div className="mt-6 pt-6 border-t border-border flex justify-between items-center">
                   <p className="text-textMuted">Monthly Payment</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-2xl font-bold text-text">
                     £845
                     <span className="text-sm font-normal text-textMuted">
                       /mo

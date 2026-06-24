@@ -145,7 +145,7 @@ export function TestimonialsPage({ onNavigateToShowroom }: TestimonialsPageProps
         <div className="mb-8">
           <button
             onClick={onNavigateToShowroom}
-            className="text-textMuted hover:text-white transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
+            className="text-textMuted hover:text-primary transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
           >
             <ArrowLeft size={16} /> Back to Showroom
           </button>
@@ -156,7 +156,7 @@ export function TestimonialsPage({ onNavigateToShowroom }: TestimonialsPageProps
           <span className="text-xs text-primary font-bold uppercase tracking-wider bg-primary/10 border border-primary/20 px-3 py-1 rounded-full inline-flex items-center gap-1.5">
             <Star size={12} fill="currentColor" /> Testimonials
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Customer Reviews</h1>
+          <h1 className="text-4xl md:text-5xl font-serif font-light text-text tracking-tight">Customer Reviews</h1>
           <p className="text-textMuted text-lg font-normal">
             We pride ourselves on our high standards of customer service. Read verified feedback from our AutoTrader and Google reviews.
           </p>
@@ -169,7 +169,7 @@ export function TestimonialsPage({ onNavigateToShowroom }: TestimonialsPageProps
           <div className="lg:col-span-8 space-y-6">
             
             {/* Filter Tabs */}
-            <div className="flex gap-3 border-b border-white/5 pb-4">
+            <div className="flex gap-3 border-b border-border pb-4">
               {(['All', 'AutoTrader', 'Google'] as const).map((source) => (
                 <button
                   key={source}
@@ -177,7 +177,7 @@ export function TestimonialsPage({ onNavigateToShowroom }: TestimonialsPageProps
                   className={`px-4 py-2 rounded-xl text-xs font-semibold tracking-wider uppercase transition-all cursor-pointer ${
                     filterSource === source
                       ? 'bg-primary text-white shadow-glow'
-                      : 'bg-surfaceHighlight/30 text-textMuted hover:text-white border border-white/5'
+                      : 'bg-surface border border-border text-textMuted hover:text-primary'
                   }`}
                 >
                   {source} Reviews
@@ -188,10 +188,10 @@ export function TestimonialsPage({ onNavigateToShowroom }: TestimonialsPageProps
             {/* Reviews List */}
             <div className="space-y-6">
               {filteredReviews.map((rev) => (
-                <div key={rev.id} className="glass-panel rounded-3xl p-6 border border-white/5 space-y-4 animate-fade-in">
+                <div key={rev.id} className="glass-panel rounded-3xl p-6 border border-border space-y-4 animate-fade-in">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="font-bold text-white text-base flex items-center gap-2">
+                      <h4 className="font-bold text-text text-base flex items-center gap-2">
                         {rev.author}
                       </h4>
                       <span className="text-[10px] text-textMuted font-medium block mt-0.5">{rev.date} via <span className="text-primary font-semibold">{rev.source}</span></span>
@@ -212,13 +212,13 @@ export function TestimonialsPage({ onNavigateToShowroom }: TestimonialsPageProps
           </div>
 
           {/* Sourcing Side Card (Write a Review Form) */}
-          <div className="lg:col-span-4 glass-panel rounded-3xl p-6 border border-white/5 space-y-5">
+          <div className="lg:col-span-4 glass-panel rounded-3xl p-6 border border-border space-y-5">
             {formSubmitted ? (
               <div className="py-10 text-center space-y-4">
                 <div className="w-12 h-12 bg-green-500/20 border border-green-500/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
                   <CheckCircle2 size={24} />
                 </div>
-                <h4 className="text-lg font-bold text-white">Review Submitted</h4>
+                <h4 className="text-lg font-bold text-text">Review Submitted</h4>
                 <p className="text-textMuted text-xs max-w-xs mx-auto leading-relaxed">
                   Thank you! Your feedback has been published on our reviews board.
                 </p>
@@ -226,7 +226,7 @@ export function TestimonialsPage({ onNavigateToShowroom }: TestimonialsPageProps
             ) : (
               <form onSubmit={handleReviewSubmit} className="space-y-4">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <h3 className="text-base font-bold text-text flex items-center gap-2">
                     <MessageSquare size={18} className="text-primary" /> Leave Feedback
                   </h3>
                   <p className="text-textMuted text-xs mt-1">Bought a car from JMC? Share your experience with others.</p>
@@ -241,7 +241,7 @@ export function TestimonialsPage({ onNavigateToShowroom }: TestimonialsPageProps
                       placeholder="e.g. John Doe"
                       value={newAuthor}
                       onChange={(e) => setNewAuthor(e.target.value)}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-primary"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-2.5 text-xs text-text focus:outline-none focus:border-primary"
                     />
                   </div>
 
@@ -269,7 +269,7 @@ export function TestimonialsPage({ onNavigateToShowroom }: TestimonialsPageProps
                       placeholder="Tell us about the customer service, delivery, or purchasing process..."
                       value={newText}
                       onChange={(e) => setNewText(e.target.value)}
-                      className="w-full bg-background border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-primary"
+                      className="w-full bg-surface border border-border rounded-xl px-4 py-2.5 text-xs text-text focus:outline-none focus:border-primary"
                     ></textarea>
                   </div>
 
