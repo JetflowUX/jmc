@@ -40,6 +40,12 @@ export function App() {
     budget: ''
   });
 
+  // Part Exchange parameters passed from Homepage to Part Exchange Page
+  const [partExchangeParams, setPartExchangeParams] = useState({
+    reg: '',
+    mileage: ''
+  });
+
   useEffect(() => {
     const parseHashRoute = () => {
       const hash = window.location.hash;
@@ -51,12 +57,24 @@ export function App() {
         const id = hash.replace('#/vehicle/', '');
         setSelectedVehicleId(id);
         setRoute('vehicle-detail');
-      } else if (hash.startsWith('#/part-exchange/')) {
-        const id = hash.replace('#/part-exchange/', '');
-        setSelectedVehicleId(id);
-        setRoute('part-exchange');
-      } else if (hash === '#/part-exchange') {
-        setSelectedVehicleId('');
+      } else if (hash.startsWith('#/part-exchange')) {
+        const queryStr = hash.split('?')[1] || '';
+        const params = new URLSearchParams(queryStr);
+        const regParam = params.get('reg') || '';
+        const mileageParam = params.get('mileage') || '';
+
+        const pathOnly = hash.split('?')[0];
+        if (pathOnly.startsWith('#/part-exchange/')) {
+          const id = pathOnly.replace('#/part-exchange/', '');
+          setSelectedVehicleId(id);
+        } else {
+          setSelectedVehicleId('');
+        }
+
+        setPartExchangeParams({
+          reg: regParam,
+          mileage: mileageParam
+        });
         setRoute('part-exchange');
       } else if (hash.startsWith('#/showroom')) {
         // Parse parameters from hash e.g. #/showroom?make=Audi
@@ -171,6 +189,8 @@ export function App() {
         {route === 'part-exchange' && (
           <PartExchangePage
             vehicleId={selectedVehicleId}
+            initialReg={partExchangeParams.reg}
+            initialMileage={partExchangeParams.mileage}
             onNavigateToVehicle={handleSelectVehicle}
             onNavigateToShowroom={handleNavigateToShowroom}
           />

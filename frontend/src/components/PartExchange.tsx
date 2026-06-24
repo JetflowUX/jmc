@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowRight, Calculator } from 'lucide-react';
 export function PartExchange() {
+  const [reg, setReg] = useState('');
+  const [mileage, setMileage] = useState('');
+
+  const handleValuationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reg.trim()) return;
+    window.location.hash = `#/part-exchange?reg=${encodeURIComponent(reg)}&mileage=${encodeURIComponent(mileage)}`;
+  };
+
   return (
     <section className="py-24 relative overflow-hidden" id="part-exchange">
       <div className="absolute inset-0 z-0">
@@ -56,7 +65,7 @@ export function PartExchange() {
               </div>
             </div>
 
-            <div className="space-y-6">
+            <form onSubmit={handleValuationSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-textMuted mb-2">
                   Vehicle Registration
@@ -64,6 +73,9 @@ export function PartExchange() {
                 <div className="relative">
                   <input
                     type="text"
+                    required
+                    value={reg}
+                    onChange={(e) => setReg(e.target.value)}
                     placeholder="ENTER REG"
                     className="w-full bg-yellow-400/90 text-black text-center font-bold text-2xl tracking-widest rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-primary uppercase placeholder:text-black/30" />
                   
@@ -79,12 +91,15 @@ export function PartExchange() {
                 </label>
                 <input
                   type="text"
+                  required
+                  value={mileage}
+                  onChange={(e) => setMileage(e.target.value)}
                   placeholder="e.g. 45,000"
                   className="w-full bg-surface border border-border rounded-xl px-4 py-4 text-text focus:outline-none focus:border-primary transition-colors" />
                 
               </div>
 
-              <button className="w-full bg-primary hover:bg-primaryHover text-white py-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 shadow-glow group">
+              <button type="submit" className="w-full bg-primary hover:bg-primaryHover text-white py-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 shadow-glow group">
                 Get Valuation
                 <ArrowRight
                   size={18}
@@ -96,7 +111,7 @@ export function PartExchange() {
                 By continuing, you agree to our terms and conditions. Valuations
                 are subject to physical inspection.
               </p>
-            </div>
+            </form>
           </div>
         </div>
       </div>

@@ -14,16 +14,24 @@ interface Vehicle {
 
 interface PartExchangePageProps {
   vehicleId?: string;
+  initialReg?: string;
+  initialMileage?: string;
   onNavigateToVehicle: (id: string) => void;
   onNavigateToShowroom: () => void;
 }
 
-export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToShowroom }: PartExchangePageProps) {
+export function PartExchangePage({ 
+  vehicleId, 
+  initialReg = '', 
+  initialMileage = '', 
+  onNavigateToVehicle, 
+  onNavigateToShowroom 
+}: PartExchangePageProps) {
   const [targetVehicle, setTargetVehicle] = useState<Vehicle | null>(null);
   
   // Form State
-  const [regNumber, setRegNumber] = useState('');
-  const [mileage, setMileage] = useState('');
+  const [regNumber, setRegNumber] = useState(initialReg);
+  const [mileage, setMileage] = useState(initialMileage);
   const [condition, setCondition] = useState('good');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -39,6 +47,13 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
     high: number;
     recommended: number;
   } | null>(null);
+  const [handoverBooked, setHandoverBooked] = useState(false);
+
+  // Sync parameters
+  useEffect(() => {
+    if (initialReg) setRegNumber(initialReg);
+    if (initialMileage) setMileage(initialMileage);
+  }, [initialReg, initialMileage]);
 
   // Load target vehicle details if exists
   useEffect(() => {
@@ -128,6 +143,7 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
     setEmail('');
     setPhone('');
     setCondition('good');
+    setHandoverBooked(false);
   };
 
   return (
@@ -237,10 +253,8 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
                   Value Another Car
                 </button>
                 <button
-                  onClick={() => {
-                    alert('Valuation locked! Our manager will call you within 1 hour to schedule a physical appraisal.');
-                  }}
-                  className="bg-primary hover:bg-primaryHover text-white px-8 py-3.5 rounded-xl text-sm font-bold transition-all shadow-glow"
+                  onClick={() => setHandoverBooked(true)}
+                  className="bg-primary hover:bg-primaryHover text-white px-8 py-3.5 rounded-xl text-sm font-bold transition-all shadow-glow cursor-pointer"
                 >
                   Book Showroom Handover
                 </button>
@@ -407,6 +421,69 @@ export function PartExchangePage({ vehicleId, onNavigateToVehicle, onNavigateToS
           </div>
         )}
       </div>
+
+      {/* HANDOVER SUCCESS MODAL */}
+      {handoverBooked && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 animate-fade-in">
+          <div onClick={() => {
+            setHandoverBooked(false);
+            resetValuation();
+          }} className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+          
+          <div className="relative bg-surface border border-border rounded-3xl p-6 md:p-8 w-full max-w-lg z-10 overflow-hidden shadow-2xl text-center space-y-6">
+            <div className="w-16 h-16 bg-green-500/20 border border-green-500/30 text-green-500 rounded-full flex items-center justify-center mx-auto animate-bounce">
+              <BadgeCheck size={32} />
+            </div>
+            
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold text-text">Valuation Locked!</h3>
+              <p className="text-textMuted text-sm">
+                Your appraisal booking request has been successfully registered for your <span className="text-text font-bold">{valuationResult?.make} {valuationResult?.model}</span> ({regNumber.toUpperCase()}).
+              </p>
+            </div>
+
+            <div className="bg-surfaceHighlight border border-border rounded-2xl p-4 text-left text-xs space-y-2">
+              <div className="flex justify-between">
+                <span className="text-textMuted">Estimated Allowance</span>
+                <span className="text-primary font-bold">£{valuationResult?.recommended.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-textMuted">Contact Phone</span>
+                <span className="text-text font-semibold">{phone}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-textMuted">Contact Email</span>
+                <span className="text-text font-semibold">{email}</span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-textMuted leading-relaxed">
+              Our branch manager will contact you on <span className="text-text font-bold">{phone}</span> within 1 hour to schedule your physical appraisal and finalize the trade-in valuation at our Heywood showroom.
+            </p>
+
+            <div className="pt-2 flex gap-3">
+              <button
+                onClick={() => {
+                  setHandoverBooked(false);
+                  resetValuation();
+                }}
+                className="w-1/2 border border-border text-text py-3 rounded-xl font-bold transition-all text-xs cursor-pointer hover:bg-surfaceHighlight"
+              >
+                Close & Restart
+              </button>
+              <button
+                onClick={() => {
+                  setHandoverBooked(false);
+                  onNavigateToShowroom();
+                }}
+                className="w-1/2 bg-primary hover:bg-primaryHover text-white py-3 rounded-xl font-bold transition-all text-xs shadow-glow cursor-pointer"
+              >
+                Go to Showroom
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

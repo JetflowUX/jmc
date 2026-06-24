@@ -78,7 +78,10 @@ export function FinanceJourney() {
             </div>
 
             <div className="mt-12">
-              <button className="bg-primary hover:bg-primaryHover text-white px-8 py-4 rounded-full font-medium transition-all shadow-glow">
+              <button
+                onClick={() => window.location.hash = '#/soft-credit-checker'}
+                className="bg-primary hover:bg-primaryHover text-white px-8 py-4 rounded-full font-medium transition-all shadow-glow cursor-pointer"
+              >
                 Start Finance Application
               </button>
             </div>
