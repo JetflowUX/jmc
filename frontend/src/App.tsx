@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
+import { Car3DOverlay } from './components/Car3DOverlay';
 import { Home } from './pages/Home';
 import { Showroom } from './pages/Showroom';
 import { VehicleDetail } from './pages/VehicleDetail';
@@ -156,6 +157,7 @@ export function App() {
   return (
     <div className="min-h-screen bg-background text-text font-sans selection:bg-primary selection:text-white flex flex-col justify-between">
       <Navbar />
+      <Car3DOverlay route={route} />
 
       <main className="flex-grow">
         {route === 'home' && (

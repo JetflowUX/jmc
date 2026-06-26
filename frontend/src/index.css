@@ -20,6 +20,25 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-text to-text/60;
   }
+  .animate-blob-1 {
+    animation: float-blob-1 22s infinite ease-in-out;
+  }
+  .animate-blob-2 {
+    animation: float-blob-2 28s infinite ease-in-out;
+  }
+}
+
+@keyframes float-blob-1 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.08); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes float-blob-2 {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(-45px, 45px) scale(1.05); }
+  100% { transform: translate(0px, 0px) scale(1); }
 }
 /* Custom Scrollbar */
 ::-webkit-scrollbar {

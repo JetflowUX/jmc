@@ -85,7 +85,7 @@ export function SmartSearch({ onSearch }: SmartSearchProps) {
   };
 
   return (
-    <section className="relative z-30 -mt-10 md:-mt-24 max-w-7xl mx-auto px-6 md:px-12 mb-24 animate-fade-in">
+    <section className="relative z-30 mt-6 md:mt-12 max-w-7xl mx-auto px-6 md:px-12 mb-24 animate-fade-in">
       <div className="glass-panel rounded-3xl p-6 md:p-8 border border-border">
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
