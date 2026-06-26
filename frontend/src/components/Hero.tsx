@@ -30,8 +30,9 @@ function HeroCarCanvas() {
     const height = canvasRef.current.clientHeight;
 
     const scene = new THREE.Scene();
+    
+    // Default camera configuration (will be updated dynamically)
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    // Move camera slightly closer so the car fits nicely in the center of the card
     camera.position.set(0, 0.15, 5.0);
 
     const renderer = new THREE.WebGLRenderer({
@@ -81,16 +82,16 @@ function HeroCarCanvas() {
           }
         });
 
-        // Center the geometry
+        // Center the geometry and normalize its size
         const box = new THREE.Box3().setFromObject(gltf.scene);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
         gltf.scene.position.sub(center);
 
-        // Scale to fit card space
+        // Normalize largest dimension to 1.0 unit (scaling handled dynamically inside the tick loop)
         const maxDim = Math.max(size.x, size.y, size.z);
-        const normalScale = 2.15 / maxDim; 
+        const normalScale = 1.0 / maxDim;
         gltf.scene.scale.set(normalScale, normalScale, normalScale);
 
         // Set initial premium orientation (3/4 front view)
@@ -121,11 +122,16 @@ function HeroCarCanvas() {
 
     const tick = () => {
       const elapsedTime = clock.getElapsedTime();
+      const isMobile = window.innerWidth < 768;
+
+      // Dynamically adjust camera parameters based on current viewport size
+      camera.position.y = isMobile ? 0.08 : 0.15;
+      camera.position.z = isMobile ? 5.2 : 5.0;
 
       if (carGroupRef.current) {
         // Floating effect (sine wave oscillation)
         const floatOffset = Math.sin(elapsedTime * 1.5) * 0.06;
-        const targetY = -0.05 + floatOffset; 
+        const targetY = (isMobile ? -0.12 : -0.05) + floatOffset; 
 
         // Slowly spin over time
         const autoSpin = elapsedTime * 0.025;
@@ -142,7 +148,8 @@ function HeroCarCanvas() {
         const targetRotY = -0.6 + autoSpin + parallaxX;
         const targetRotZ = 0;
 
-        const targetScale = 1.0; 
+        // Scale is adjusted dynamically for mobile vs desktop
+        const targetScale = isMobile ? 1.65 : 2.15; 
 
         // Interpolate (Lerp) values for smooth transitions
         currentPos.x += (targetX - currentPos.x) * 0.05;
@@ -197,7 +204,7 @@ function HeroCarCanvas() {
         }
       });
     };
-  }, [isLoaded]);
+  }, []); // Empty dependency array prevents double loading the 19MB model
 
   if (loadError) return null;
 
@@ -231,7 +238,7 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center py-20 px-4 sm:px-6 md:px-8 overflow-hidden bg-background">
+    <section className="relative min-h-screen flex flex-col items-center justify-start md:justify-center py-12 md:py-20 px-4 sm:px-6 md:px-8 overflow-hidden bg-background">
       {/* Drifting Organic Background Blobs (replicating Spline background) */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div className="absolute top-1/4 left-1/4 w-72 md:w-[32rem] h-72 md:h-[32rem] bg-primary/5 rounded-full blur-[85px] md:blur-[130px] animate-blob-1" />
@@ -239,15 +246,15 @@ export function Hero() {
         <div className="absolute top-1/2 right-10 w-64 md:w-96 h-64 md:h-96 bg-primary/8 rounded-full blur-[75px] md:blur-[115px] animate-blob-1" style={{ animationDirection: 'reverse' }} />
       </div>
 
-      <div className="relative w-full max-w-6xl mx-auto z-10 pt-16 md:pt-20">
-        {/* Centered card mockup matching Spline project structure */}
-        <div className="relative w-full bg-surface border border-border/80 shadow-glass rounded-[2rem] md:rounded-[2.5rem] overflow-hidden p-6 md:p-12 md:pb-16 flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-12 min-h-[560px] md:h-[600px]">
+      <div className="relative w-full max-w-6xl mx-auto z-10 pt-12 md:pt-20">
+        {/* Centered card mockup matching Spline project structure - fully responsive flex column on mobile and grid on desktop */}
+        <div className="relative w-full bg-surface border border-border/80 shadow-glass rounded-[2rem] md:rounded-[2.5rem] overflow-hidden p-6 md:p-12 md:pb-16 flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-12 min-h-none md:h-[600px]">
           
           {/* Vertical Divider line */}
           <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-border/40 z-0 hidden md:block" />
 
           {/* Left Column (Main Brand / Headline) */}
-          <div className="flex flex-col justify-between h-full z-20 relative">
+          <div className="flex flex-col justify-between h-auto md:h-full z-20 relative">
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -270,11 +277,12 @@ export function Hero() {
               </div>
             </motion.div>
 
+            {/* Desktop Browse Button */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-8 md:mt-0"
+              className="mt-8 md:mt-0 hidden md:block"
             >
               <a
                 href="#/showroom"
@@ -285,16 +293,13 @@ export function Hero() {
             </motion.div>
           </div>
 
-          {/* Center 3D Car Overlay (positioned in the center, overlapping the divider) */}
-          <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center">
-            {/* The Canvas runs in absolute overlay inside the card container */}
-            <div className="relative w-full h-52 md:h-full md:w-[48%] pointer-events-none">
-              <HeroCarCanvas />
-            </div>
+          {/* 3D Car Canvas Wrapper - Inline on mobile, absolute overlay centered on desktop */}
+          <div className="relative md:absolute w-full h-64 md:h-full md:w-[48%] md:left-[26%] md:top-0 z-10 pointer-events-none my-4 md:my-0 flex items-center justify-center">
+            <HeroCarCanvas />
           </div>
 
           {/* Right Column (Promise / Actions) */}
-          <div className="flex flex-col justify-between h-full z-20 relative text-left md:text-right md:items-end">
+          <div className="flex flex-col justify-between h-auto md:h-full z-20 relative text-left md:text-right md:items-end mt-4 md:mt-0">
             <div className="flex justify-between md:justify-end w-full">
               {/* Spline style Menu/Arrow button at top-right */}
               <div className="hidden md:block">
@@ -329,23 +334,31 @@ export function Hero() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-8 md:mt-0 flex flex-col items-start md:items-end gap-2.5"
+              className="mt-8 md:mt-0 flex flex-col items-start md:items-end gap-6 w-full"
             >
-              {/* Play Button Trigger styled like Spline project button */}
-              <a
-                href="#/soft-credit-checker"
-                className="flex items-center gap-3.5 group cursor-pointer bg-surface/50 backdrop-blur-sm border border-border/60 hover:border-primary/40 px-5 py-2.5 rounded-full transition-all duration-300 shadow-sm"
-              >
-                <div className="w-8 h-8 rounded-full border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform duration-300 bg-primary/5">
-                  <svg className="w-3.5 h-3.5 fill-current ml-0.5" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] font-semibold tracking-wider text-text uppercase group-hover:text-primary transition-colors">
-                  Start Finance Check
-                </span>
-              </a>
-              <span className="text-[9px] font-semibold tracking-[0.25em] text-textMuted/40 uppercase mt-4 block">
+              {/* Actions stack for mobile, horizontal on larger screens */}
+              <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto justify-start md:justify-end">
+                <a
+                  href="#/showroom"
+                  className="block md:hidden bg-primary hover:bg-primaryHover text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all shadow-glow hover:shadow-lg text-center"
+                >
+                  Browse Showroom
+                </a>
+                <a
+                  href="#/soft-credit-checker"
+                  className="flex items-center justify-center gap-3.5 group cursor-pointer bg-surface/50 backdrop-blur-sm border border-border/60 hover:border-primary/40 px-5 py-2.5 rounded-full transition-all duration-300 shadow-sm"
+                >
+                  <div className="w-8 h-8 rounded-full border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform duration-300 bg-primary/5">
+                    <svg className="w-3.5 h-3.5 fill-current ml-0.5" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                  <span className="text-[10px] font-semibold tracking-wider text-text uppercase group-hover:text-primary transition-colors">
+                    Start Finance Check
+                  </span>
+                </a>
+              </div>
+              <span className="text-[9px] font-semibold tracking-[0.25em] text-textMuted/40 uppercase mt-4 block text-left md:text-right">
                 HEYWOOD
               </span>
             </motion.div>

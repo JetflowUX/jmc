@@ -253,8 +253,8 @@ export function Car3DOverlay({ route }: Car3DOverlayProps) {
         const scrollVal = scrollYRef.current;
 
         // Apply scroll offsets (car drives up/down slightly and rotates on scroll)
-        const scrollYAdjustment = isLoaded ? -scrollVal * 0.0018 : 0;
-        const scrollRyAdjustment = isLoaded ? scrollVal * 0.0012 : 0;
+        const scrollYAdjustment = carGroupRef.current ? -scrollVal * 0.0018 : 0;
+        const scrollRyAdjustment = carGroupRef.current ? scrollVal * 0.0012 : 0;
 
         // Mouse Parallax adjustment
         const parallaxX = mouseRef.current.x * 0.12;
@@ -325,7 +325,7 @@ export function Car3DOverlay({ route }: Car3DOverlayProps) {
         }
       });
     };
-  }, [isLoaded]);
+  }, []);
 
   if (loadError) return null;
 

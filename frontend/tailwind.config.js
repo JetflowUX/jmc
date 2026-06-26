@@ -10,8 +10,8 @@ module.exports = {
         background: '#F8F7F4',
         surface: '#FCFBF9',
         surfaceHighlight: '#F1EFEA',
-        primary: '#1F5C3D', // Deep British racing green
-        primaryHover: '#16432C',
+        primary: '#E35205', // Vibrant Premium Orange
+        primaryHover: '#C54300',
         text: '#1A1A18', // Warm near-black
         textMuted: '#6B6B66',
         border: '#E5E3DE',
@@ -26,7 +26,7 @@ module.exports = {
       },
       boxShadow: {
         'glass': '0 4px 30px rgba(26, 26, 24, 0.04)',
-        'glow': '0 0 20px rgba(31, 92, 61, 0.12)',
+        'glow': '0 0 20px rgba(227, 82, 5, 0.12)',
       },
       keyframes: {
         'fade-in': {
