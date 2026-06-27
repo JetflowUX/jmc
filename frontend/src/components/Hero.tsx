@@ -125,13 +125,25 @@ function HeroCarCanvas() {
       const isMobile = window.innerWidth < 768;
 
       // Dynamically adjust camera parameters based on current viewport size
-      camera.position.y = isMobile ? 0.08 : 0.15;
+      camera.position.y = isMobile ? 0.60 : 0.70;
       camera.position.z = isMobile ? 5.2 : 5.0;
+
+      // Dynamic resize of drawing buffer to match canvas display size
+      if (canvasRef.current) {
+        const canvas = canvasRef.current;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        if (canvas.width !== width || canvas.height !== height) {
+          renderer.setSize(width, height, false);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+        }
+      }
 
       if (carGroupRef.current) {
         // Floating effect (sine wave oscillation)
         const floatOffset = Math.sin(elapsedTime * 1.5) * 0.06;
-        const targetY = (isMobile ? -0.12 : -0.05) + floatOffset; 
+        const targetY = (isMobile ? 0.40 : 0.50) + floatOffset; 
 
         // Slowly spin over time
         const autoSpin = elapsedTime * 0.025;
@@ -165,6 +177,9 @@ function HeroCarCanvas() {
         carGroupRef.current.position.copy(currentPos);
         carGroupRef.current.rotation.copy(currentRot);
         carGroupRef.current.scale.set(currentScale, currentScale, currentScale);
+
+        // Point the camera to look at a target slightly below the car to render the car higher
+        camera.lookAt(new THREE.Vector3(0, 0.05, 0));
       }
 
       renderer.render(scene, camera);
@@ -371,10 +386,10 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="mt-12 w-full border-t border-border/60 pt-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left"
+          className="mt-12 w-full border-t border-border/60 pt-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center"
         >
           {trustBadges.map((badge, index) => (
-            <div key={index} className="flex items-center gap-3 justify-center md:justify-start">
+            <div key={index} className="flex items-center gap-3 justify-center">
               <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center text-primary border border-primary/10">
                 <badge.icon className="w-4 h-4" />
               </div>

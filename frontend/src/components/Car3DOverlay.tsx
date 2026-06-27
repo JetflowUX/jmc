@@ -245,6 +245,18 @@ export function Car3DOverlay({ route }: Car3DOverlayProps) {
     let currentScale = 0.001;
 
     const tick = () => {
+      // Dynamic resize of drawing buffer to match canvas display size
+      if (canvasRef.current) {
+        const canvas = canvasRef.current;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        if (canvas.width !== width || canvas.height !== height) {
+          renderer.setSize(width, height, false);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+        }
+      }
+
       if (carGroupRef.current) {
         const viewportWidth = window.innerWidth;
         const preset = getPreset(routeRef.current, viewportWidth);
