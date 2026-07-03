@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ShieldCheck, Wrench, BadgeCheck } from 'lucide-react';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 function HeroCarCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -69,8 +69,8 @@ function HeroCarCanvas() {
 
     loader.load(
       modelUrl,
-      (gltf) => {
-        gltf.scene.traverse((child) => {
+      (gltf: GLTF) => {
+        gltf.scene.traverse((child: THREE.Object3D) => {
           if (child instanceof THREE.Mesh) {
             child.castShadow = true;
             child.receiveShadow = true;
@@ -101,12 +101,12 @@ function HeroCarCanvas() {
         carGroupRef.current = carWrapper;
         setIsLoaded(true);
       },
-      (xhr) => {
+      (xhr: ProgressEvent) => {
         if (xhr.total > 0) {
           setLoadingProgress(Math.round((xhr.loaded / xhr.total) * 100));
         }
       },
-      (error) => {
+      (error: unknown) => {
         console.error('Error loading car model inside Hero card:', error);
         setLoadError(true);
       }
