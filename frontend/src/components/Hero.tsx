@@ -144,28 +144,30 @@ function HeroCarCanvas() {
 
     const tick = () => {
       const elapsedTime = clock.getElapsedTime();
-      const isMobileOrTablet = window.innerWidth < 1024;
+      const width = window.innerWidth;
+      const isMobile = width < 768;
+      const isTablet = width >= 768 && width < 1024;
 
       // Dynamically adjust camera parameters based on current viewport size
-      camera.position.y = isMobileOrTablet ? 0.40 : 0.70;
-      camera.position.z = isMobileOrTablet ? 3.6 : 5.0;
+      camera.position.y = isMobile ? 0.35 : (isTablet ? 0.50 : 0.70);
+      camera.position.z = isMobile ? 4.5 : (isTablet ? 4.0 : 5.0);
 
       // Dynamic resize of drawing buffer to match canvas display size
       if (canvasRef.current) {
         const canvas = canvasRef.current;
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-        if (canvas.width !== width || canvas.height !== height) {
-          renderer.setSize(width, height, false);
-          camera.aspect = width / height;
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        if (canvas.width !== w || canvas.height !== h) {
+          renderer.setSize(w, h, false);
+          camera.aspect = w / h;
           camera.updateProjectionMatrix();
         }
       }
 
       if (carGroupRef.current) {
         // Floating effect (sine wave oscillation)
-        const floatOffset = Math.sin(elapsedTime * 1.5) * (isMobileOrTablet ? 0.03 : 0.06);
-        const targetY = (isMobileOrTablet ? 0.20 : 0.50) + floatOffset; 
+        const floatOffset = Math.sin(elapsedTime * 1.5) * (isMobile ? 0.025 : (isTablet ? 0.04 : 0.06));
+        const targetY = (isMobile ? 0.25 : (isTablet ? 0.35 : 0.50)) + floatOffset; 
 
         // Slowly spin over time
         const autoSpin = elapsedTime * 0.025;
@@ -183,8 +185,8 @@ function HeroCarCanvas() {
         const targetRotY = -0.6 + autoSpin + scrollSpin + parallaxX;
         const targetRotZ = 0;
 
-        // Scale is adjusted dynamically for mobile vs desktop
-        const targetScale = isMobileOrTablet ? 2.45 : 2.15; 
+        // Scale is adjusted dynamically for mobile vs tablet vs desktop
+        const targetScale = isMobile ? 1.75 : (isTablet ? 2.15 : 2.15); 
 
         // Interpolate (Lerp) values for smooth transitions
         currentPos.x += (targetX - currentPos.x) * 0.05;
