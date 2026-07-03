@@ -110,6 +110,7 @@ function HeroCarCanvas() {
         const size = box.getSize(new THREE.Vector3());
 
         gltf.scene.position.sub(center);
+        gltf.scene.position.y += 0.35; // Shift meshes up relative to pivot point to prevent tire clipping
 
         // Normalize largest dimension to 1.0 unit (scaling handled dynamically inside the tick loop)
         const maxDim = Math.max(size.x, size.y, size.z);
@@ -149,8 +150,8 @@ function HeroCarCanvas() {
       const isTablet = width >= 768 && width < 1024;
 
       // Dynamically adjust camera parameters based on current viewport size
-      camera.position.y = isMobile ? 0.35 : (isTablet ? 0.50 : 0.70);
-      camera.position.z = isMobile ? 4.5 : (isTablet ? 4.0 : 5.0);
+      camera.position.y = isMobile ? 0.35 : (isTablet ? 0.45 : 0.60);
+      camera.position.z = isMobile ? 4.3 : (isTablet ? 4.0 : 4.4);
 
       // Dynamic resize of drawing buffer to match canvas display size
       if (canvasRef.current) {
@@ -166,8 +167,8 @@ function HeroCarCanvas() {
 
       if (carGroupRef.current) {
         // Floating effect (sine wave oscillation)
-        const floatOffset = Math.sin(elapsedTime * 1.5) * (isMobile ? 0.025 : (isTablet ? 0.04 : 0.06));
-        const targetY = (isMobile ? 0.25 : (isTablet ? 0.35 : 0.50)) + floatOffset; 
+        const floatOffset = Math.sin(elapsedTime * 1.5) * (isMobile ? 0.025 : (isTablet ? 0.035 : 0.05));
+        const targetY = (isMobile ? 0.30 : (isTablet ? 0.40 : 0.40)) + floatOffset; 
 
         // Slowly spin over time
         const autoSpin = elapsedTime * 0.025;
@@ -186,7 +187,7 @@ function HeroCarCanvas() {
         const targetRotZ = 0;
 
         // Scale is adjusted dynamically for mobile vs tablet vs desktop
-        const targetScale = isMobile ? 1.75 : (isTablet ? 2.15 : 2.15); 
+        const targetScale = isMobile ? 1.70 : (isTablet ? 2.05 : 2.20); 
 
         // Interpolate (Lerp) values for smooth transitions
         currentPos.x += (targetX - currentPos.x) * 0.05;
@@ -203,8 +204,8 @@ function HeroCarCanvas() {
         carGroupRef.current.rotation.copy(currentRot);
         carGroupRef.current.scale.set(currentScale, currentScale, currentScale);
 
-        // Point the camera to look at a target slightly below the car to render the car higher
-        camera.lookAt(new THREE.Vector3(0, 0.05, 0));
+        // Point the camera to look at a target slightly below the car's current animated position to shift the car model upwards
+        camera.lookAt(new THREE.Vector3(0, currentPos.y - 0.10, 0));
       }
 
       renderer.render(scene, camera);
@@ -365,8 +366,8 @@ export function Hero() {
             </motion.div>
           </div>
 
-          {/* 3D Car Canvas Wrapper - Inline on mobile, absolute overlay centered on desktop */}
-          <div className="relative lg:absolute w-full h-72 sm:h-80 lg:h-full lg:w-[48%] lg:left-[26%] lg:top-0 z-10 pointer-events-none my-4 lg:my-0 flex items-center justify-center">
+          {/* 3D Car Canvas Wrapper - Inline on mobile/tablet, absolute overlay centered on desktop */}
+          <div className="relative lg:absolute w-full h-80 sm:h-96 lg:h-full lg:w-[60%] lg:left-[20%] lg:top-0 z-10 pointer-events-none my-4 lg:my-0 flex items-center justify-center">
             <HeroCarCanvas />
           </div>
 
