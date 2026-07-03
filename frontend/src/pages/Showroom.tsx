@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, ArrowUpDown, ChevronLeft, ChevronRight, Gauge, Calendar, Fuel, HelpCircle, RefreshCcw } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowUpDown, ChevronLeft, ChevronRight, Gauge, Calendar, Fuel, HelpCircle, RefreshCcw, LayoutGrid, List, Scale, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DEALERSHIP_DETAILS } from '../config';
 
 interface Vehicle {
@@ -59,6 +60,84 @@ export function Showroom({
   const [sortBy, setSortBy] = useState('price-asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [compareList, setCompareList] = useState<Vehicle[]>([]);
+  const [showCompareModal, setShowCompareModal] = useState(false);
+
+  const toggleCompare = (vehicle: Vehicle, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (compareList.some(x => x.id === vehicle.id)) {
+      setCompareList(compareList.filter(x => x.id !== vehicle.id));
+    } else {
+      if (compareList.length >= 3) {
+        alert("You can compare a maximum of 3 vehicles at a time.");
+        return;
+      }
+      setCompareList([...compareList, vehicle]);
+    }
+  };
+
+  const parseNaturalLanguage = (query: string) => {
+    const q = query.toLowerCase();
+    
+    // Check Makes (longest first)
+    const sortedMakes = [...makes].sort((a, b) => b.length - a.length);
+    const matchedMake = sortedMakes.find(m => q.includes(m.toLowerCase()));
+    if (matchedMake) {
+      setSelectedMake(matchedMake);
+      setSelectedModel('');
+    }
+    
+    // Check Transmissions
+    const matchedTrans = transmissions.find(t => q.includes(t.toLowerCase()));
+    if (matchedTrans) {
+      setSelectedTransmission(matchedTrans);
+    }
+    
+    // Check Fuel Types (longest first)
+    const sortedFuels = [...fuels].sort((a, b) => b.length - a.length);
+    const matchedFuel = sortedFuels.find(f => q.includes(f.toLowerCase()));
+    if (matchedFuel) {
+      setSelectedFuel(matchedFuel);
+    } else if (q.includes('hybrid')) {
+      // Fallback: find first hybrid option
+      const hybridOption = fuels.find(f => f.toLowerCase().includes('hybrid'));
+      if (hybridOption) setSelectedFuel(hybridOption);
+    }
+    
+    // Check Body Styles
+    const matchedBody = bodyStyles.find(b => q.includes(b.toLowerCase()));
+    if (matchedBody) {
+      setSelectedBodyStyle(matchedBody);
+    }
+    
+    // Check Budgets
+    if (q.includes('300')) {
+      setBudgetLimit('300');
+    } else if (q.includes('500')) {
+      setBudgetLimit('500');
+    } else if (q.includes('800')) {
+      setBudgetLimit('800');
+    }
+  };
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    parseNaturalLanguage(val);
+    setCurrentPage(1);
+  };
+
+  const activePills = useMemo(() => {
+    const pills = [];
+    if (selectedMake) pills.push({ name: `Make: ${selectedMake}`, clear: () => { setSelectedMake(''); setSelectedModel(''); } });
+    if (selectedModel) pills.push({ name: `Model: ${selectedModel}`, clear: () => setSelectedModel('') });
+    if (selectedFuel) pills.push({ name: `Fuel: ${selectedFuel}`, clear: () => setSelectedFuel('') });
+    if (selectedTransmission) pills.push({ name: `Trans: ${selectedTransmission}`, clear: () => setSelectedTransmission('') });
+    if (selectedBodyStyle) pills.push({ name: `Style: ${selectedBodyStyle}`, clear: () => setSelectedBodyStyle('') });
+    if (budgetLimit) pills.push({ name: `Max Budget: £${budgetLimit}/mo`, clear: () => setBudgetLimit('') });
+    return pills;
+  }, [selectedMake, selectedModel, selectedFuel, selectedTransmission, selectedBodyStyle, budgetLimit]);
 
   const itemsPerPage = 9;
 
@@ -140,14 +219,46 @@ export function Showroom({
   const filteredVehicles = useMemo(() => {
     return vehicles
       .filter((vehicle) => {
-        // Search query (matches title, subtitle, spec, description)
+        // Search query (matches title, subtitle, spec, description with active keyword stripping)
         if (searchQuery) {
-          const q = searchQuery.toLowerCase();
-          const matchTitle = vehicle.title.toLowerCase().includes(q);
-          const matchSubtitle = vehicle.subtitle.toLowerCase().includes(q);
-          const matchMake = vehicle.make.toLowerCase().includes(q);
-          const matchModel = vehicle.model.toLowerCase().includes(q);
-          if (!matchTitle && !matchSubtitle && !matchMake && !matchModel) return false;
+          let cleanQuery = searchQuery.toLowerCase();
+          
+          if (selectedMake) {
+            cleanQuery = cleanQuery.replace(selectedMake.toLowerCase(), '');
+          }
+          if (selectedModel) {
+            cleanQuery = cleanQuery.replace(selectedModel.toLowerCase(), '');
+          }
+          if (selectedTransmission) {
+            cleanQuery = cleanQuery.replace(selectedTransmission.toLowerCase(), '');
+          }
+          if (selectedFuel) {
+            cleanQuery = cleanQuery.replace(selectedFuel.toLowerCase(), '');
+            cleanQuery = cleanQuery.replace('hybrid', '');
+            cleanQuery = cleanQuery.replace('electric', '');
+          }
+          if (selectedBodyStyle) {
+            cleanQuery = cleanQuery.replace(selectedBodyStyle.toLowerCase(), '');
+          }
+          
+          // Remove budget keyword mappings
+          cleanQuery = cleanQuery.replace('under', '').replace('over', '').replace('budget', '').replace('max', '').replace('limit', '').replace('monthly', '').replace('£', '');
+          cleanQuery = cleanQuery.replace('300', '').replace('500', '').replace('800', '');
+          
+          // Tokenize remaining query
+          const tokens = cleanQuery.split(/[\s,.-]+/).map(t => t.trim()).filter(t => t.length > 1);
+          
+          if (tokens.length > 0) {
+            const match = tokens.every(token => {
+              return vehicle.title.toLowerCase().includes(token) ||
+                     vehicle.subtitle.toLowerCase().includes(token) ||
+                     vehicle.make.toLowerCase().includes(token) ||
+                     vehicle.model.toLowerCase().includes(token) ||
+                     vehicle.colour.toLowerCase().includes(token) ||
+                     (vehicle.description && vehicle.description.toLowerCase().includes(token));
+            });
+            if (!match) return false;
+          }
         }
 
         // Dropdowns
@@ -240,9 +351,9 @@ export function Showroom({
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="e.g. Audi, A3, Petrol..."
+                    placeholder="Type search, e.g. automatic white SUV under 500..."
                     value={searchQuery}
-                    onChange={(e) => handleFilterChange(setSearchQuery, e.target.value)}
+                    onChange={(e) => handleSearchChange(e.target.value)}
                     className="w-full bg-surface border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm text-text focus:outline-none focus:border-primary transition-all"
                   />
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-textMuted" />
@@ -370,6 +481,24 @@ export function Showroom({
                   <SlidersHorizontal size={16} /> Filters
                 </button>
 
+                {/* Layout Switcher */}
+                <div className="hidden sm:flex items-center border border-border rounded-xl overflow-hidden bg-surface">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 transition-colors cursor-pointer ${viewMode === 'grid' ? 'bg-primary text-white' : 'text-textMuted hover:text-text'}`}
+                    title="Grid View"
+                  >
+                    <LayoutGrid size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 transition-colors cursor-pointer ${viewMode === 'list' ? 'bg-primary text-white' : 'text-textMuted hover:text-text'}`}
+                    title="List View"
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
+
                 {/* Sort Dropdown */}
                 <div className="flex items-center gap-2">
                   <ArrowUpDown size={16} className="text-textMuted" />
@@ -387,6 +516,24 @@ export function Showroom({
               </div>
             </div>
 
+            {/* Active Filter Pills */}
+            {activePills.length > 0 && (
+              <div className="flex flex-wrap gap-2 items-center pt-2">
+                <span className="text-xs text-textMuted font-semibold">Active filters:</span>
+                {activePills.map((pill, i) => (
+                  <div key={i} className="flex items-center gap-1.5 bg-surfaceHighlight border border-border px-3 py-1 rounded-full text-xs font-medium text-text">
+                    <span>{pill.name}</span>
+                    <button onClick={pill.clear} className="text-textMuted hover:text-red-500 transition-colors">
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+                <button onClick={clearFilters} className="text-xs text-primary hover:underline font-semibold ml-1">
+                  Reset
+                </button>
+              </div>
+            )}
+
             {/* Results Grid */}
             {filteredVehicles.length === 0 ? (
               <div className="glass-panel rounded-2xl p-16 text-center border border-border space-y-4">
@@ -403,7 +550,7 @@ export function Showroom({
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className={viewMode === 'list' ? "grid grid-cols-1 gap-6" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
                 {paginatedVehicles.map((vehicle) => {
                   const hasImage = vehicle.images && vehicle.images.length > 0;
                   const displayImage = hasImage
@@ -414,16 +561,32 @@ export function Showroom({
                     <div
                       key={vehicle.id}
                       onClick={() => onSelectVehicle(vehicle.id)}
-                      className="group bg-surface rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300 shadow hover:shadow-glow flex flex-col justify-between h-full cursor-pointer"
+                      className={`group bg-surface rounded-2xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300 shadow hover:shadow-glow flex ${viewMode === 'list' ? 'md:flex-row flex-col md:h-64' : 'flex-col h-full'} cursor-pointer relative`}
                     >
+                      {/* Compare Checkbox Overlay */}
+                      <div 
+                        className="absolute top-3 left-3 z-30 pointer-events-auto"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <label className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20 text-[10px] font-bold text-white cursor-pointer hover:bg-black/80 transition-colors select-none">
+                          <input
+                            type="checkbox"
+                            checked={compareList.some(x => x.id === vehicle.id)}
+                            onChange={(e) => toggleCompare(vehicle, e as any)}
+                            className="w-3.5 h-3.5 accent-primary cursor-pointer"
+                          />
+                          Compare
+                        </label>
+                      </div>
+
                       {/* Image Frame */}
-                      <div className="relative h-48 sm:h-52 overflow-hidden bg-black flex items-center justify-center">
+                      <div className={`relative bg-black flex items-center justify-center overflow-hidden ${viewMode === 'list' ? 'md:w-72 md:h-full shrink-0 w-full h-48' : 'h-48 sm:h-52 w-full'}`}>
                         <img
                           src={displayImage}
                           alt={vehicle.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
-                        <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/20 text-xs font-semibold text-white">
+                        <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/20 text-xs font-semibold text-white">
                           {vehicle.year}
                         </div>
                         {vehicle.price < 10000 && (
@@ -431,13 +594,13 @@ export function Showroom({
                             Great Value
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-80" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-85 pointer-events-none" />
                       </div>
 
                       {/* Content Frame */}
                       <div className="p-5 flex-grow flex flex-col justify-between">
                         <div>
-                          <div className="flex justify-between items-start gap-2 mb-1">
+                          <div className="flex justify-between items-start gap-4 mb-1">
                             <h3 className="text-lg font-bold text-text leading-tight group-hover:text-primary transition-colors">
                               {vehicle.make}
                             </h3>
@@ -448,7 +611,7 @@ export function Showroom({
                           <p className="text-xs text-textMuted line-clamp-1 mb-4">{vehicle.model} - {vehicle.subtitle}</p>
 
                           {/* Quick Specs Grid */}
-                          <div className="grid grid-cols-2 gap-2 mb-4">
+                          <div className={`grid gap-2 mb-4 ${viewMode === 'list' ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-2'}`}>
                             <div className="flex items-center gap-2 bg-surfaceHighlight/50 border border-border p-2 rounded-xl text-xs text-text">
                               <Gauge size={13} className="text-textMuted" />
                               <span className="truncate">{vehicle.mileage}</span>
@@ -457,16 +620,16 @@ export function Showroom({
                               <Fuel size={13} className="text-textMuted" />
                               <span className="truncate">{vehicle.fuel}</span>
                             </div>
-                            <div className="flex items-center gap-2 bg-surfaceHighlight/50 border border-border p-2 rounded-xl text-xs text-text col-span-2">
+                            <div className={`flex items-center gap-2 bg-surfaceHighlight/50 border border-border p-2 rounded-xl text-xs text-text ${viewMode === 'list' ? '' : 'col-span-2'}`}>
                               <Calendar size={13} className="text-textMuted" />
-                              <span className="truncate">{vehicle.transmission} • {vehicle.bodyStyle}</span>
+                              <span className="truncate">{vehicle.transmission}</span>
                             </div>
                           </div>
                         </div>
 
                         {/* Cost & Action Panel */}
                         <div className="border-t border-border pt-4 mt-auto">
-                          <div className="flex justify-between items-center mb-3">
+                          <div className="flex justify-between items-center mb-1">
                             <div>
                               <p className="text-[10px] text-textMuted leading-none mb-1">Finance estimated</p>
                               <p className="text-sm font-bold text-primary">
@@ -512,6 +675,157 @@ export function Showroom({
           </main>
         </div>
       </div>
+
+      {/* Compare Drawer Overlay */}
+      <AnimatePresence>
+        {compareList.length > 0 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-xl border-t border-border shadow-2xl py-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></span>
+              <span className="text-sm font-semibold text-text">
+                Compare Deck ({compareList.length} of 3 selected)
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-4 flex-wrap justify-center">
+              {compareList.map(v => (
+                <div key={v.id} className="flex items-center gap-2 bg-surfaceHighlight border border-border px-3 py-1.5 rounded-xl text-xs font-medium text-text">
+                  <span className="truncate max-w-[120px]">{v.title}</span>
+                  <button 
+                    onClick={(e) => toggleCompare(v, e as any)}
+                    className="text-textMuted hover:text-red-500 transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setCompareList([])}
+                className="text-xs font-semibold text-textMuted hover:text-text px-4 py-2"
+              >
+                Clear All
+              </button>
+              <button
+                onClick={() => setShowCompareModal(true)}
+                disabled={compareList.length < 2}
+                className="bg-primary hover:bg-primaryHover disabled:opacity-40 disabled:hover:bg-primary text-white text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full shadow-glow transition-all cursor-pointer"
+              >
+                Compare Now
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Compare side-by-side Modal */}
+      <AnimatePresence>
+        {showCompareModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-10">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCompareModal(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-5xl bg-surface border border-border/80 shadow-2xl rounded-3xl overflow-hidden p-4 sm:p-6 md:p-10 max-h-[90vh] flex flex-col z-10"
+            >
+              <button 
+                onClick={() => setShowCompareModal(false)}
+                className="absolute top-6 right-6 text-textMuted hover:text-text transition-colors cursor-pointer"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-text flex items-center gap-2">
+                  <Scale className="text-primary" /> Compare Vehicles
+                </h3>
+                <p className="text-textMuted text-sm">Side-by-side technical specification comparison.</p>
+              </div>
+
+              <div className="overflow-x-auto flex-grow pb-4">
+                <table className="w-full text-left border-collapse min-w-[600px]">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="py-3 px-4 font-semibold text-textMuted text-xs uppercase tracking-wider w-1/4">Specification</th>
+                      {compareList.map(v => (
+                        <th key={v.id} className="py-3 px-4 w-1/4">
+                          <div className="text-sm font-bold text-text">{v.title}</div>
+                          <div className="text-xs text-primary font-extrabold">£{v.price.toLocaleString()}</div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60 text-sm">
+                    <tr>
+                      <td className="py-3 px-4 font-medium text-textMuted text-xs uppercase tracking-wider">Year</td>
+                      {compareList.map(v => (
+                        <td key={v.id} className="py-3 px-4 text-text font-semibold">{v.year}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-medium text-textMuted text-xs uppercase tracking-wider">Mileage</td>
+                      {compareList.map(v => (
+                        <td key={v.id} className="py-3 px-4 text-text font-semibold">{v.mileage}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-medium text-textMuted text-xs uppercase tracking-wider">Fuel Type</td>
+                      {compareList.map(v => (
+                        <td key={v.id} className="py-3 px-4 text-text font-semibold">{v.fuel}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-medium text-textMuted text-xs uppercase tracking-wider">Transmission</td>
+                      {compareList.map(v => (
+                        <td key={v.id} className="py-3 px-4 text-text font-semibold">{v.transmission}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-medium text-textMuted text-xs uppercase tracking-wider">Body Style</td>
+                      {compareList.map(v => (
+                        <td key={v.id} className="py-3 px-4 text-text font-semibold">{v.bodyStyle}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-medium text-textMuted text-xs uppercase tracking-wider">Engine Size</td>
+                      {compareList.map(v => (
+                        <td key={v.id} className="py-3 px-4 text-text font-semibold">{v.engineSize}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-medium text-textMuted text-xs uppercase tracking-wider">Previous Owners</td>
+                      {compareList.map(v => (
+                        <td key={v.id} className="py-3 px-4 text-text font-semibold">{v.owners}</td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-medium text-textMuted text-xs uppercase tracking-wider">Monthly Est.</td>
+                      {compareList.map(v => (
+                        <td key={v.id} className="py-3 px-4 text-text font-semibold">{v.monthly}</td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile Filters Drawer Overlay */}
       {isMobileFiltersOpen && (

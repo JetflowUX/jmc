@@ -42,6 +42,133 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
   const [showReserveModal, setShowReserveModal] = useState(false);
   const [modalSuccess, setModalSuccess] = useState(false);
 
+  // Stepped Reservation States
+  const [reserveStep, setReserveStep] = useState(1);
+  const [cardName, setCardName] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [isCvvFocused, setIsCvvFocused] = useState(false);
+
+  // Confetti Canvas Effect hook
+  useEffect(() => {
+    if (reserveStep !== 4) return;
+    const canvas = document.getElementById('confetti-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    const updateSize = () => {
+      canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : 500;
+      canvas.height = canvas.parentElement ? canvas.parentElement.clientHeight : 500;
+    };
+    updateSize();
+    
+    const particles: any[] = [];
+    const colors = ['#E35205', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
+    
+    for (let i = 0; i < 100; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * canvas.height,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        tilt: Math.random() * 10 - 5,
+        tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+        tiltAngle: 0
+      });
+    }
+    
+    let animationId: number;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach((p, idx) => {
+        p.tiltAngle += p.tiltAngleIncremental;
+        p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+        p.x += Math.sin(p.tiltAngle);
+        p.tilt = Math.sin(p.tiltAngle - idx / 3) * 15;
+        
+        ctx.beginPath();
+        ctx.lineWidth = p.r;
+        ctx.strokeStyle = p.color;
+        ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+        ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+        ctx.stroke();
+        
+        if (p.y > canvas.height) {
+          particles[idx] = {
+            x: Math.random() * canvas.width,
+            y: -20,
+            r: p.r,
+            d: p.d,
+            color: p.color,
+            tilt: p.tilt,
+            tiltAngleIncremental: p.tiltAngleIncremental,
+            tiltAngle: 0
+          };
+        }
+      });
+      
+      animationId = requestAnimationFrame(draw);
+    };
+    
+    draw();
+    return () => cancelAnimationFrame(animationId);
+  }, [reserveStep]);
+
+  // Performance Spec Level Bars helper
+  const performanceMetrics = useMemo(() => {
+    if (!vehicle) return [];
+    
+    // Horsepower metric
+    let bhp = 120;
+    const makeLower = vehicle.make.toLowerCase();
+    const isSporty = ['mercedes', 'bmw', 'lexus', 'land rover', 'maserati', 'audi'].some(b => makeLower.includes(b));
+    if (vehicle.engineSize.includes('4.4') || vehicle.engineSize.includes('4.0') || vehicle.price > 40000) {
+      bhp = 530;
+    } else if (vehicle.engineSize.includes('3.0') || vehicle.engineSize.includes('2.5') || vehicle.price > 25000) {
+      bhp = 340;
+    } else if (vehicle.engineSize.includes('2.0') || vehicle.price > 18000) {
+      bhp = 190;
+    }
+    
+    // Efficiency metric (mpg / relative fuel score)
+    let efficiency = 45; 
+    const fuelLower = vehicle.fuel.toLowerCase();
+    if (fuelLower.includes('electric')) {
+      efficiency = 120; 
+    } else if (fuelLower.includes('hybrid')) {
+      efficiency = 65;
+    } else if (fuelLower.includes('diesel')) {
+      efficiency = 52;
+    }
+    
+    // Handling & Sportiness
+    let handling = 60;
+    if (isSporty) handling = 85;
+    const styleLower = vehicle.bodyStyle.toLowerCase();
+    if (styleLower.includes('convertible') || styleLower.includes('coupe')) {
+      handling = 92;
+    }
+    
+    // Space & Practicality
+    let practicality = 70;
+    if (styleLower.includes('suv') || styleLower.includes('estate')) {
+      practicality = 95;
+    } else if (styleLower.includes('convertible') || styleLower.includes('coupe')) {
+      practicality = 45;
+    }
+
+    return [
+      { name: "Power Output (BHP)", value: bhp, max: 600, suffix: " BHP" },
+      { name: "Efficiency (MPG)", value: efficiency, max: 150, suffix: " mpg" },
+      { name: "Handling Dynamics", value: handling, max: 100, suffix: "%" },
+      { name: "Space & Practicality", value: practicality, max: 100, suffix: "%" }
+    ];
+  }, [vehicle]);
+
   // Form States
   const [formName, setFormName] = useState('');
   const [formEmail, setFormEmail] = useState('');
@@ -138,22 +265,38 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
     setActiveImageIndex((prev) => (prev - 1 + vehicle.images.length) % vehicle.images.length);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleEnquirySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName || !formEmail || !formPhone) return;
-    
-    // Simulate submission API call
     setModalSuccess(true);
     setTimeout(() => {
       setModalSuccess(false);
       setShowEnquiryModal(false);
-      setShowReserveModal(false);
-      // Reset forms
       setFormName('');
       setFormEmail('');
       setFormPhone('');
       setFormMessage('');
     }, 2500);
+  };
+
+  const handleReserveSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formName || !formEmail || !formPhone || !cardNumber || !cardExpiry || !cardCvv) return;
+    setModalSuccess(true);
+    setReserveStep(4);
+  };
+
+  const closeReserveModal = () => {
+    setShowReserveModal(false);
+    setReserveStep(1);
+    setModalSuccess(false);
+    setFormName('');
+    setFormEmail('');
+    setFormPhone('');
+    setCardName('');
+    setCardNumber('');
+    setCardExpiry('');
+    setCardCvv('');
   };
 
   if (loading) {
@@ -306,6 +449,29 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
               </h2>
               <div className="text-textMuted leading-relaxed text-sm space-y-4 whitespace-pre-line">
                 {vehicle.description || 'No descriptive overview provided for this vehicle. Please make an enquiry for additional details.'}
+              </div>
+            </div>
+
+            {/* Performance Indicators */}
+            <div className="glass-panel rounded-3xl p-6 md:p-8 border border-border space-y-6">
+              <h2 className="text-2xl font-bold text-text flex items-center gap-2">
+                <Sparkles size={20} className="text-primary" /> Performance Metrics
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {performanceMetrics.map((metric) => (
+                  <div key={metric.name} className="space-y-2">
+                    <div className="flex justify-between text-xs font-semibold">
+                      <span className="text-textMuted">{metric.name}</span>
+                      <span className="text-text">{metric.value}{metric.suffix}</span>
+                    </div>
+                    <div className="h-2 bg-surfaceHighlight rounded-full overflow-hidden border border-border">
+                      <div 
+                        className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-1000"
+                        style={{ width: `${(metric.value / metric.max) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -521,7 +687,7 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                   <p className="text-textMuted text-xs mt-1">Make an enquiry for: <span className="text-text font-bold">{vehicle.title}</span></p>
                 </div>
 
-                <form onSubmit={handleFormSubmit} className="space-y-4">
+                <form onSubmit={handleEnquirySubmit} className="space-y-4">
                   <div className="space-y-1">
                     <label className="text-xs text-textMuted font-semibold uppercase">Full Name</label>
                     <input
@@ -580,52 +746,100 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
         </div>
       )}
 
-      {/* RESERVE MODAL */}
+      {/* Stepped Reserve Modal */}
       {showReserveModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-          <div onClick={() => setShowReserveModal(false)} className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 overflow-y-auto">
+          <div onClick={closeReserveModal} className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
           
-          <div className="relative bg-surface border border-border rounded-3xl p-6 md:p-8 w-full max-w-lg z-10 overflow-hidden shadow-2xl animate-fade-in">
-            {modalSuccess ? (
-              <div className="py-12 text-center space-y-4">
-                <div className="w-16 h-16 bg-green-500/20 border border-green-500/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-                  <CheckCircle2 size={32} />
-                </div>
-                <h3 className="text-2xl font-bold text-text">Holding Deposit Paid!</h3>
-                <p className="text-textMuted text-sm max-w-sm mx-auto">
-                  Congratulations! We have reserved the {vehicle.title} under your name. A confirmation email has been sent to {formEmail}. Our agent will ring you on {formPhone} to coordinate delivery or viewing.
-                </p>
+          <div className="relative bg-surface border border-border rounded-3xl p-6 md:p-8 w-full max-w-lg z-10 overflow-hidden shadow-2xl animate-fade-in flex flex-col max-h-[90vh]">
+            
+            {/* Step Indicators Header */}
+            {reserveStep < 4 && (
+              <div className="flex justify-between items-center mb-6 pb-4 border-b border-border">
+                {[1, 2, 3].map((stepNum) => (
+                  <div key={stepNum} className="flex items-center gap-2">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                      reserveStep === stepNum 
+                        ? 'bg-primary text-white scale-110 shadow-glow' 
+                        : reserveStep > stepNum 
+                          ? 'bg-green-500 text-white' 
+                          : 'bg-surfaceHighlight text-textMuted border border-border'
+                    }`}>
+                      {reserveStep > stepNum ? '✓' : stepNum}
+                    </div>
+                    <span className={`text-[10px] uppercase font-bold tracking-wider hidden sm:inline ${
+                      reserveStep === stepNum ? 'text-primary' : 'text-textMuted'
+                    }`}>
+                      {stepNum === 1 ? 'Benefits' : stepNum === 2 ? 'Contact' : 'Payment'}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ) : (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-text">Reserve Vehicle</h3>
-                  <p className="text-textMuted text-xs mt-1">
-                    Place a 100% refundable holding deposit of <span className="text-text font-bold">£99</span> to secure this vehicle.
-                  </p>
-                </div>
+            )}
 
-                <div className="bg-surfaceHighlight border border-border rounded-2xl p-4 flex gap-4 items-center">
-                  <img src={galleryImages[0]} className="w-20 h-14 object-cover rounded-lg" alt="Thumbnail" />
+            {/* Stepper Wizard Content Container */}
+            <div className="overflow-y-auto flex-grow pr-1">
+              {/* STEP 1: BENEFITS */}
+              {reserveStep === 1 && (
+                <div className="space-y-6">
                   <div>
-                    <h4 className="font-bold text-text text-sm">{vehicle.title}</h4>
-                    <p className="text-xs text-textMuted">£{vehicle.price.toLocaleString()} • {vehicle.registration}</p>
+                    <h3 className="text-xl font-bold text-text">Reserve: {vehicle.title}</h3>
+                    <p className="text-xs text-textMuted mt-1">Place a £99 fully refundable holding deposit to lock in this price.</p>
                   </div>
-                </div>
 
-                <form onSubmit={handleFormSubmit} className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-xs text-textMuted font-semibold uppercase">Full Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={formName}
-                      onChange={(e) => setFormName(e.target.value)}
-                      placeholder="e.g. John Doe"
-                      className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
-                    />
+                  <div className="space-y-3.5">
+                    <div className="flex gap-3 bg-surfaceHighlight/50 border border-border p-3 rounded-2xl">
+                      <ShieldCheck className="text-primary shrink-0 w-5 h-5 mt-0.5" />
+                      <div>
+                        <h4 className="text-xs font-bold text-text">100% Refundable Guarantee</h4>
+                        <p className="text-[10px] text-textMuted mt-0.5">Cancel at any time for any reason, and receive your deposit back immediately.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 bg-surfaceHighlight/50 border border-border p-3 rounded-2xl">
+                      <BadgeCheck className="text-primary shrink-0 w-5 h-5 mt-0.5" />
+                      <div>
+                        <h4 className="text-xs font-bold text-text">3-Day Showroom Lock</h4>
+                        <p className="text-[10px] text-textMuted mt-0.5">We take the car off the market completely, so no one else can purchase it.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 bg-surfaceHighlight/50 border border-border p-3 rounded-2xl">
+                      <CheckCircle2 className="text-primary shrink-0 w-5 h-5 mt-0.5" />
+                      <div>
+                        <h4 className="text-xs font-bold text-text">Pre-Delivery Safety Check</h4>
+                        <p className="text-[10px] text-textMuted mt-0.5">Prior to handover, the vehicle completes our 60-point inspection.</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                  <button
+                    onClick={() => setReserveStep(2)}
+                    className="w-full bg-primary hover:bg-primaryHover text-white py-3.5 rounded-xl font-bold transition-all mt-4 cursor-pointer text-sm"
+                  >
+                    Start Reservation Process
+                  </button>
+                </div>
+              )}
+
+              {/* STEP 2: CONTACT DETAILS */}
+              {reserveStep === 2 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-text">Your Information</h3>
+                    <p className="text-xs text-textMuted mt-1">Provide contact info for booking appointment.</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-xs text-textMuted font-semibold uppercase">Full Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={formName}
+                        onChange={(e) => setFormName(e.target.value)}
+                        placeholder="e.g. John Doe"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-primary transition-all"
+                      />
+                    </div>
                     <div className="space-y-1">
                       <label className="text-xs text-textMuted font-semibold uppercase">Email Address</label>
                       <input
@@ -650,24 +864,205 @@ export function VehicleDetail({ vehicleId, onBack, onNavigateToPartExchange }: V
                     </div>
                   </div>
 
-                  {/* Payment placeholder */}
-                  <div className="bg-surfaceHighlight/50 border border-border rounded-2xl p-4 space-y-3">
-                    <span className="text-[10px] text-textMuted font-semibold uppercase block">Mock Card Payment Details</span>
-                    <div className="bg-background border border-border rounded-xl px-4 py-3 text-sm text-textMuted/70 flex items-center justify-between">
-                      <span>4111 •••• •••• 1111</span>
-                      <span className="text-xs">12 / 28</span>
+                  <div className="flex gap-4 pt-2">
+                    <button
+                      onClick={() => setReserveStep(1)}
+                      className="w-1/3 bg-transparent border border-border hover:bg-surfaceHighlight text-text py-3.5 rounded-xl font-semibold transition-all cursor-pointer text-xs"
+                    >
+                      Back
+                    </button>
+                    <button
+                      disabled={!formName || !formEmail || !formPhone}
+                      onClick={() => setReserveStep(3)}
+                      className="w-2/3 bg-primary hover:bg-primaryHover disabled:opacity-40 disabled:hover:bg-primary text-white py-3.5 rounded-xl font-bold transition-all cursor-pointer text-xs"
+                    >
+                      Continue to Payment
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: CREDIT CARD DECK PAYMENT */}
+              {reserveStep === 3 && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-text">Deposit Details</h3>
+                    <p className="text-xs text-textMuted mt-1">Pay £99 refundable reservation holding deposit securely.</p>
+                  </div>
+
+                  {/* 3D-effect Flipping Credit Card Visual */}
+                  <div className="flex justify-center py-4" style={{ perspective: 1000 }}>
+                    <div 
+                      className="relative w-full max-w-[320px] aspect-[80/44] rounded-2xl text-white shadow-2xl transition-transform duration-700 select-none bg-gradient-to-br from-gray-900 to-black border border-white/10"
+                      style={{ 
+                        transformStyle: 'preserve-3d', 
+                        transform: isCvvFocused ? 'rotateY(180deg)' : 'rotateY(0deg)' 
+                      }}
+                    >
+                      {/* CARD FRONT */}
+                      <div className="absolute inset-0 p-5 flex flex-col justify-between" style={{ backfaceVisibility: 'hidden' }}>
+                        <div className="flex justify-between items-start">
+                          <span className="text-[10px] font-bold tracking-widest text-primary/80 uppercase">JMC RESERVATION DECK</span>
+                          <div className="w-10 h-7 bg-white/10 rounded flex items-center justify-center">
+                            <span className="text-[8px] font-extrabold italic">VISA</span>
+                          </div>
+                        </div>
+                        
+                        <div className="text-lg font-mono tracking-widest py-2">
+                          {cardNumber || '•••• •••• •••• ••••'}
+                        </div>
+                        
+                        <div className="flex justify-between text-xs">
+                          <div>
+                            <div className="text-[7px] text-gray-400 uppercase font-semibold">Cardholder</div>
+                            <div className="font-semibold uppercase tracking-wider truncate max-w-[170px]">
+                              {cardName || formName || 'YOUR FULL NAME'}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-[7px] text-gray-400 uppercase font-semibold">Expires</div>
+                            <div className="font-semibold">{cardExpiry || 'MM/YY'}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CARD BACK */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black flex flex-col justify-between py-5" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+                        <div className="w-full h-8 bg-black"></div>
+                        <div className="px-5 flex items-center gap-3">
+                          <div className="w-2/3 h-7 bg-white/20 rounded flex items-center px-2">
+                            <span className="text-[8px] italic text-gray-300">JMC Motors Secure Signature strip</span>
+                          </div>
+                          <div className="w-1/3 h-7 bg-white text-black font-mono font-bold flex items-center justify-center rounded">
+                            {cardCvv || '•••'}
+                          </div>
+                        </div>
+                        <div className="px-5 text-right text-[6px] text-gray-500">
+                          This mock card check represents sandbox 3D secure payment gateway authorization.
+                        </div>
+                      </div>
                     </div>
                   </div>
 
+                  {/* Card Fields Form */}
+                  <form onSubmit={handleReserveSubmit} className="space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-xs text-textMuted font-semibold uppercase">Cardholder Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={cardName}
+                        onChange={(e) => setCardName(e.target.value)}
+                        placeholder="e.g. John Doe"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm text-text focus:outline-none focus:border-primary transition-all"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <label className="text-xs text-textMuted font-semibold uppercase">Card Number</label>
+                      <input
+                        type="text"
+                        required
+                        maxLength={19}
+                        value={cardNumber}
+                        onChange={(e) => {
+                          const v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                          const matches = v.match(/\d{4,16}/g);
+                          const match = matches && matches[0] || '';
+                          const parts = [];
+                          for (let i = 0, len = match.length; i < len; i += 4) {
+                            parts.push(match.substring(i, i + 4));
+                          }
+                          setCardNumber(parts.length > 0 ? parts.join(' ') : v);
+                        }}
+                        placeholder="4111 2222 3333 4444"
+                        className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm text-text focus:outline-none focus:border-primary transition-all font-mono"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-xs text-textMuted font-semibold uppercase">Expiry Date</label>
+                        <input
+                          type="text"
+                          required
+                          maxLength={5}
+                          value={cardExpiry}
+                          onChange={(e) => {
+                            let v = e.target.value.replace(/\//g, '').replace(/[^0-9]/gi, '');
+                            if (v.length > 2) {
+                              v = v.substring(0,2) + '/' + v.substring(2, 4);
+                            }
+                            setCardExpiry(v);
+                          }}
+                          placeholder="MM/YY"
+                          className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm text-text focus:outline-none focus:border-primary transition-all font-mono"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs text-textMuted font-semibold uppercase">CVV Code</label>
+                        <input
+                          type="password"
+                          required
+                          maxLength={3}
+                          value={cardCvv}
+                          onChange={(e) => setCardCvv(e.target.value.replace(/[^0-9]/gi, ''))}
+                          onFocus={() => setIsCvvFocused(true)}
+                          onBlur={() => setIsCvvFocused(false)}
+                          placeholder="•••"
+                          className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm text-text focus:outline-none focus:border-primary transition-all font-mono"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setReserveStep(2)}
+                        className="w-1/3 bg-transparent border border-border hover:bg-surfaceHighlight text-text py-3.5 rounded-xl font-semibold transition-all cursor-pointer text-xs"
+                      >
+                        Back
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!cardName || cardNumber.length < 16 || cardExpiry.length < 5 || cardCvv.length < 3}
+                        className="w-2/3 bg-green-500 hover:bg-green-600 disabled:opacity-40 disabled:hover:bg-green-500 text-white py-3.5 rounded-xl font-bold transition-all cursor-pointer text-xs shadow-glow"
+                      >
+                        Pay £99 Holding Deposit
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* STEP 4: SUCCESS WITH CONFETTI CANVAS */}
+              {reserveStep === 4 && (
+                <div className="py-10 text-center space-y-6 relative min-h-[300px] flex flex-col justify-center items-center">
+                  <canvas id="confetti-canvas" className="absolute inset-0 w-full h-full pointer-events-none z-0" />
+                  
+                  <div className="relative z-10 w-16 h-16 bg-green-500/20 border border-green-500/30 text-green-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
+                    <CheckCircle2 size={32} />
+                  </div>
+                  
+                  <div className="relative z-10 space-y-2">
+                    <h3 className="text-2xl font-bold text-text">Holding Deposit Paid!</h3>
+                    <p className="text-textMuted text-xs max-w-sm mx-auto leading-relaxed">
+                      Congratulations! We have reserved the <span className="text-text font-bold">{vehicle.title}</span> under your name.
+                    </p>
+                    <p className="text-textMuted text-xs max-w-sm mx-auto leading-relaxed">
+                      A confirmation email detailing the 3-day showroom lock has been dispatched to <span className="text-text font-bold">{formEmail}</span>. Our representative will contact you on <span className="text-text font-bold">{formPhone}</span> shortly.
+                    </p>
+                  </div>
+
                   <button
-                    type="submit"
-                    className="w-full bg-green-500 hover:bg-green-600 text-white py-3.5 rounded-xl font-bold transition-all mt-4 cursor-pointer"
+                    onClick={closeReserveModal}
+                    className="relative z-10 w-full bg-primary hover:bg-primaryHover text-white py-3 rounded-xl font-bold transition-all text-xs cursor-pointer mt-4"
                   >
-                    Pay £99 Holding Deposit
+                    Finish & Close
                   </button>
-                </form>
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, ShieldCheck, Wrench, BadgeCheck } from 'lucide-react';
 import * as THREE from 'three';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -12,6 +12,28 @@ function HeroCarCanvas() {
 
   const carGroupRef = useRef<THREE.Group | null>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
+  const [activeHotspot, setActiveHotspot] = useState<number | null>(null);
+
+  const hotspots = [
+    {
+      id: 1,
+      title: "M TwinPower Turbo V8",
+      desc: "4.4L Twin-Turbo V8 Engine with 48V mild hybrid tech, delivering 530 BHP.",
+      style: { top: "40%", left: "46%" }
+    },
+    {
+      id: 2,
+      title: "Adaptive LED Headlamps",
+      desc: "BMW Laserlight technology with automatic high-beam assist and adaptive cornering.",
+      style: { top: "50%", left: "28%" }
+    },
+    {
+      id: 3,
+      title: "21-inch M Light Alloys",
+      desc: "Double-spoke bi-colour wheels with performance run-flat tires and blue M brakes.",
+      style: { top: "62%", left: "62%" }
+    }
+  ];
 
   // Handle mouse movements for parallax
   useEffect(() => {
@@ -122,11 +144,11 @@ function HeroCarCanvas() {
 
     const tick = () => {
       const elapsedTime = clock.getElapsedTime();
-      const isMobile = window.innerWidth < 768;
+      const isMobileOrTablet = window.innerWidth < 1024;
 
       // Dynamically adjust camera parameters based on current viewport size
-      camera.position.y = isMobile ? 0.60 : 0.70;
-      camera.position.z = isMobile ? 5.2 : 5.0;
+      camera.position.y = isMobileOrTablet ? 0.40 : 0.70;
+      camera.position.z = isMobileOrTablet ? 3.6 : 5.0;
 
       // Dynamic resize of drawing buffer to match canvas display size
       if (canvasRef.current) {
@@ -142,11 +164,12 @@ function HeroCarCanvas() {
 
       if (carGroupRef.current) {
         // Floating effect (sine wave oscillation)
-        const floatOffset = Math.sin(elapsedTime * 1.5) * 0.06;
-        const targetY = (isMobile ? 0.40 : 0.50) + floatOffset; 
+        const floatOffset = Math.sin(elapsedTime * 1.5) * (isMobileOrTablet ? 0.03 : 0.06);
+        const targetY = (isMobileOrTablet ? 0.20 : 0.50) + floatOffset; 
 
         // Slowly spin over time
         const autoSpin = elapsedTime * 0.025;
+        const scrollSpin = typeof window !== 'undefined' ? window.scrollY * 0.0012 : 0;
 
         // Mouse Parallax adjustment
         const parallaxX = mouseRef.current.x * 0.22;
@@ -157,11 +180,11 @@ function HeroCarCanvas() {
         const targetZ = 0;
         
         const targetRotX = 0.05 + parallaxY;
-        const targetRotY = -0.6 + autoSpin + parallaxX;
+        const targetRotY = -0.6 + autoSpin + scrollSpin + parallaxX;
         const targetRotZ = 0;
 
         // Scale is adjusted dynamically for mobile vs desktop
-        const targetScale = isMobile ? 1.65 : 2.15; 
+        const targetScale = isMobileOrTablet ? 2.45 : 2.15; 
 
         // Interpolate (Lerp) values for smooth transitions
         currentPos.x += (targetX - currentPos.x) * 0.05;
@@ -227,11 +250,43 @@ function HeroCarCanvas() {
     <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 pointer-events-none">
       <canvas
         ref={canvasRef}
-        className="w-full h-full transition-opacity duration-1000 ease-out"
+        className="w-full h-full transition-opacity duration-1000 ease-out pointer-events-auto"
         style={{
           opacity: isLoaded ? 1 : 0
         }}
       />
+      
+      {isLoaded && hotspots.map((spot) => (
+        <div
+          key={spot.id}
+          className="absolute z-30 pointer-events-auto hidden lg:block"
+          style={spot.style}
+          onMouseEnter={() => setActiveHotspot(spot.id)}
+          onMouseLeave={() => setActiveHotspot(null)}
+        >
+          {/* Pulsing Dot */}
+          <button className="relative w-6 h-6 flex items-center justify-center cursor-pointer focus:outline-none">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-primary border-2 border-white shadow-glow"></span>
+          </button>
+          
+          {/* Tooltip Card */}
+          <AnimatePresence>
+            {activeHotspot === spot.id && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 w-52 glass-panel p-4 rounded-2xl shadow-2xl text-left pointer-events-none"
+              >
+                <h4 className="text-xs font-bold text-text uppercase tracking-wider mb-1">{spot.title}</h4>
+                <p className="text-[10px] text-textMuted leading-relaxed">{spot.desc}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ))}
+
       {!isLoaded && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-transparent z-20">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3.5" />
@@ -253,7 +308,7 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-start md:justify-center py-12 md:py-20 px-4 sm:px-6 md:px-8 overflow-hidden bg-background">
+    <section className="relative min-h-screen flex flex-col items-center justify-start lg:justify-center py-12 lg:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
       {/* Drifting Organic Background Blobs (replicating Spline background) */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
         <div className="absolute top-1/4 left-1/4 w-72 md:w-[32rem] h-72 md:h-[32rem] bg-primary/5 rounded-full blur-[85px] md:blur-[130px] animate-blob-1" />
@@ -263,30 +318,30 @@ export function Hero() {
 
       <div className="relative w-full max-w-6xl mx-auto z-10 pt-12 md:pt-20">
         {/* Centered card mockup matching Spline project structure - fully responsive flex column on mobile and grid on desktop */}
-        <div className="relative w-full bg-surface border border-border/80 shadow-glass rounded-[2rem] md:rounded-[2.5rem] overflow-hidden p-6 md:p-12 md:pb-16 flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-12 min-h-none md:h-[600px]">
+        <div className="relative w-full bg-surface border border-border/80 shadow-glass rounded-[2rem] lg:rounded-[2.5rem] overflow-hidden p-6 lg:p-12 lg:pb-16 flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 min-h-none lg:h-[600px]">
           
           {/* Vertical Divider line */}
-          <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-border/40 z-0 hidden md:block" />
+          <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-border/40 z-0 hidden lg:block" />
 
           {/* Left Column (Main Brand / Headline) */}
-          <div className="flex flex-col justify-between h-auto md:h-full z-20 relative">
+          <div className="flex flex-col justify-between h-auto lg:h-full z-20 relative">
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <span className="text-[10px] md:text-xs font-semibold tracking-[0.25em] text-primary/85 uppercase mb-4 block">
+              <span className="text-[10px] lg:text-xs font-semibold tracking-[0.25em] text-primary/85 uppercase mb-4 block">
                 JMC Motors Heywood
               </span>
-              <h1 className="text-4xl md:text-6xl lg:text-[5.5rem] font-serif font-light tracking-tight text-text leading-[1.05] mb-6">
+              <h1 className="text-4xl sm:text-6xl lg:text-[5.5rem] font-serif font-light tracking-tight text-text leading-[1.05] mb-6">
                 Find Your <br />
                 Next Car
               </h1>
               <div className="pl-4 border-l-2 border-primary max-w-sm mt-6">
-                <h3 className="text-[10px] md:text-xs font-bold tracking-widest text-text uppercase mb-1.5">
+                <h3 className="text-[10px] lg:text-xs font-bold tracking-widest text-text uppercase mb-1.5">
                   Quality Approved Vehicles
                 </h3>
-                <p className="text-xs md:text-sm text-textMuted font-light leading-relaxed">
+                <p className="text-xs lg:text-sm text-textMuted font-light leading-relaxed">
                   Experience premium car buying with transparency. Fully HPI checked, 60-point inspected, and ready to drive away.
                 </p>
               </div>
@@ -297,7 +352,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-8 md:mt-0 hidden md:block"
+              className="mt-8 lg:mt-0 hidden lg:block"
             >
               <a
                 href="#/showroom"
@@ -309,15 +364,15 @@ export function Hero() {
           </div>
 
           {/* 3D Car Canvas Wrapper - Inline on mobile, absolute overlay centered on desktop */}
-          <div className="relative md:absolute w-full h-64 md:h-full md:w-[48%] md:left-[26%] md:top-0 z-10 pointer-events-none my-4 md:my-0 flex items-center justify-center">
+          <div className="relative lg:absolute w-full h-72 sm:h-80 lg:h-full lg:w-[48%] lg:left-[26%] lg:top-0 z-10 pointer-events-none my-4 lg:my-0 flex items-center justify-center">
             <HeroCarCanvas />
           </div>
 
           {/* Right Column (Promise / Actions) */}
-          <div className="flex flex-col justify-between h-auto md:h-full z-20 relative text-left md:text-right md:items-end mt-4 md:mt-0">
-            <div className="flex justify-between md:justify-end w-full">
+          <div className="flex flex-col justify-between h-auto lg:h-full z-20 relative text-left lg:text-right lg:items-end mt-4 lg:mt-0">
+            <div className="flex justify-between lg:justify-end w-full">
               {/* Spline style Menu/Arrow button at top-right */}
-              <div className="hidden md:block">
+              <div className="hidden lg:block">
                 <a
                   href="#/showroom"
                   className="w-11 h-11 border border-border/80 rounded-full flex items-center justify-center text-text hover:text-primary hover:border-primary transition-all duration-300 shadow-sm bg-surface"
@@ -333,13 +388,13 @@ export function Hero() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-6 md:mt-0 max-w-sm md:pl-4 text-left"
+              className="mt-6 lg:mt-0 max-w-sm lg:pl-4 text-left"
             >
-              <div className="pl-4 border-l-2 border-primary md:border-l-0 md:border-r-2 md:border-primary md:pr-4 md:pl-0 text-left md:text-right">
-                <h3 className="text-[10px] md:text-xs font-bold tracking-widest text-text uppercase mb-1.5">
+              <div className="pl-4 border-l-2 border-primary lg:border-l-0 lg:border-r-2 lg:border-primary lg:pr-4 lg:pl-0 text-left lg:text-right">
+                <h3 className="text-[10px] lg:text-xs font-bold tracking-widest text-text uppercase mb-1.5">
                   The JMC Promise
                 </h3>
-                <p className="text-xs md:text-sm text-textMuted font-light leading-relaxed">
+                <p className="text-xs lg:text-sm text-textMuted font-light leading-relaxed">
                   Every vehicle undergoes our complete diagnostics inspection, complete with a minimum 12-month MOT and warranty.
                 </p>
               </div>
@@ -349,13 +404,13 @@ export function Hero() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-8 md:mt-0 flex flex-col items-start md:items-end gap-6 w-full"
+              className="mt-8 lg:mt-0 flex flex-col items-start lg:items-end gap-6 w-full"
             >
               {/* Actions stack for mobile, horizontal on larger screens */}
-              <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto justify-start md:justify-end">
+              <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto justify-start lg:justify-end">
                 <a
                   href="#/showroom"
-                  className="block md:hidden bg-primary hover:bg-primaryHover text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all shadow-glow hover:shadow-lg text-center"
+                  className="block lg:hidden bg-primary hover:bg-primaryHover text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all shadow-glow hover:shadow-lg text-center"
                 >
                   Browse Showroom
                 </a>
@@ -373,7 +428,7 @@ export function Hero() {
                   </span>
                 </a>
               </div>
-              <span className="text-[9px] font-semibold tracking-[0.25em] text-textMuted/40 uppercase mt-4 block text-left md:text-right">
+              <span className="text-[9px] font-semibold tracking-[0.25em] text-textMuted/40 uppercase mt-4 block text-left lg:text-right">
                 HEYWOOD
               </span>
             </motion.div>
