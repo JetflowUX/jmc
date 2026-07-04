@@ -4,6 +4,12 @@ import { CheckCircle2, ShieldCheck, Wrench, BadgeCheck } from 'lucide-react';
 import * as THREE from 'three';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
+const CAR_MODELS = [
+  { name: 'BMW X7 M60i', path: '/3d assets/bmw_x7_m60i.glb' },
+  { name: 'Honda Civic Type-R', path: '/3d assets/honda_civic_type-r.glb' },
+  { name: 'Volvo V50', path: '/3d assets/volvo_v50.glb' }
+];
+
 function HeroCarCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -13,6 +19,20 @@ function HeroCarCanvas() {
   const carGroupRef = useRef<THREE.Group | null>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const [activeHotspot, setActiveHotspot] = useState<number | null>(null);
+
+  // Model swap states
+  const [activeModelIndex, setActiveModelIndex] = useState(0);
+  const [isSceneInitialized, setIsSceneInitialized] = useState(false);
+  const cachedModelsRef = useRef<Record<string, THREE.Group>>({});
+  const loadingModelRef = useRef<string | null>(null);
+
+  // Cycle car models every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveModelIndex((prev) => (prev + 1) % CAR_MODELS.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const hotspots = [
     {
@@ -82,58 +102,11 @@ function HeroCarCanvas() {
     dirLightBack.position.set(0, 3, -5);
     scene.add(dirLightBack);
 
-    // GLTF Loading
-    const loader = new GLTFLoader();
+    // GLTF wrapper setup
     const carWrapper = new THREE.Group();
     scene.add(carWrapper);
-
-    const modelUrl = '/3d assets/bmw_x7_m60i.glb';
-
-    loader.load(
-      modelUrl,
-      (gltf: GLTF) => {
-        gltf.scene.traverse((child: THREE.Object3D) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-            if (child.material) {
-              const mat = child.material as THREE.MeshStandardMaterial;
-              mat.roughness = Math.min(mat.roughness, 0.35);
-              mat.metalness = Math.max(mat.metalness, 0.7);
-            }
-          }
-        });
-
-        // Center the geometry and normalize its size
-        const box = new THREE.Box3().setFromObject(gltf.scene);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-
-        gltf.scene.position.sub(center);
-        gltf.scene.position.y += 0.35; // Shift meshes up relative to pivot point to prevent tire clipping
-
-        // Normalize largest dimension to 1.0 unit (scaling handled dynamically inside the tick loop)
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const normalScale = 1.0 / maxDim;
-        gltf.scene.scale.set(normalScale, normalScale, normalScale);
-
-        // Set initial premium orientation (3/4 front view)
-        gltf.scene.rotation.y = Math.PI / 12;
-
-        carWrapper.add(gltf.scene);
-        carGroupRef.current = carWrapper;
-        setIsLoaded(true);
-      },
-      (xhr: ProgressEvent) => {
-        if (xhr.total > 0) {
-          setLoadingProgress(Math.round((xhr.loaded / xhr.total) * 100));
-        }
-      },
-      (error: unknown) => {
-        console.error('Error loading car model inside Hero card:', error);
-        setLoadError(true);
-      }
-    );
+    carGroupRef.current = carWrapper;
+    setIsSceneInitialized(true);
 
     // Animation Loop
     let animationFrameId: number;
@@ -244,8 +217,112 @@ function HeroCarCanvas() {
           }
         }
       });
+
+      // Dispose all cached model geometries and materials
+      Object.values(cachedModelsRef.current).forEach((modelGroup) => {
+        modelGroup.traverse((obj) => {
+          if (obj instanceof THREE.Mesh) {
+            obj.geometry.dispose();
+            if (Array.isArray(obj.material)) {
+              obj.material.forEach((mat) => mat.dispose());
+            } else {
+              obj.material.dispose();
+            }
+          }
+        });
+      });
     };
-  }, []); // Empty dependency array prevents double loading the 19MB model
+  }, []);
+
+  // Effect to handle dynamic preloading, caching, and swapping of 3D car models
+  useEffect(() => {
+    if (!isSceneInitialized || !carGroupRef.current) return;
+
+    const modelInfo = CAR_MODELS[activeModelIndex];
+    const modelPath = modelInfo.path;
+
+    // Check if model is already cached
+    if (cachedModelsRef.current[modelPath]) {
+      const cachedScene = cachedModelsRef.current[modelPath];
+      
+      // Clear old children
+      while (carGroupRef.current.children.length > 0) {
+        carGroupRef.current.remove(carGroupRef.current.children[0]);
+      }
+      
+      carGroupRef.current.add(cachedScene);
+      setIsLoaded(true);
+      setLoadingProgress(100);
+      return;
+    }
+
+    // Otherwise, load model asynchronously
+    setIsLoaded(false);
+    setLoadingProgress(0);
+    loadingModelRef.current = modelPath;
+
+    const loader = new GLTFLoader();
+    loader.load(
+      modelPath,
+      (gltf: GLTF) => {
+        if (loadingModelRef.current !== modelPath) return;
+
+        gltf.scene.traverse((child: THREE.Object3D) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (child.material) {
+              const mat = child.material as THREE.MeshStandardMaterial;
+              mat.roughness = Math.min(mat.roughness, 0.35);
+              mat.metalness = Math.max(mat.metalness, 0.7);
+            }
+          }
+        });
+
+        // Center the geometry and normalize its size
+        const box = new THREE.Box3().setFromObject(gltf.scene);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        gltf.scene.position.sub(center);
+        gltf.scene.position.y += 0.35; // Shift meshes up relative to pivot point to prevent tire clipping
+
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const normalScale = 1.0 / maxDim;
+        gltf.scene.scale.set(normalScale, normalScale, normalScale);
+
+        // Set initial premium orientation (3/4 front view)
+        // Since the Volvo V50 model is oriented backwards in its GLB coordinates, rotate it by 180 degrees (Math.PI) to face forward
+        const isVolvo = modelPath.includes('volvo_v50');
+        gltf.scene.rotation.y = isVolvo ? (Math.PI / 12 + Math.PI) : (Math.PI / 12);
+
+        // Cache the loaded model
+        cachedModelsRef.current[modelPath] = gltf.scene;
+
+        // Clear children of carGroupRef.current and add new model scene
+        if (carGroupRef.current) {
+          while (carGroupRef.current.children.length > 0) {
+            carGroupRef.current.remove(carGroupRef.current.children[0]);
+          }
+          carGroupRef.current.add(gltf.scene);
+        }
+        
+        setIsLoaded(true);
+        setLoadingProgress(100);
+      },
+      (xhr: ProgressEvent) => {
+        if (xhr.total > 0 && loadingModelRef.current === modelPath) {
+          setLoadingProgress(Math.round((xhr.loaded / xhr.total) * 100));
+        }
+      },
+      (error: unknown) => {
+        console.error('Error loading car model inside Hero card:', error);
+        if (loadingModelRef.current === modelPath) {
+          setLoadError(true);
+        }
+      }
+    );
+  }, [activeModelIndex, isSceneInitialized]);
 
   if (loadError) return null;
 
@@ -259,12 +336,11 @@ function HeroCarCanvas() {
         }}
       />
       
-      {isLoaded && hotspots.map((spot) => (
+      {isLoaded && (
         <div
-          key={spot.id}
           className="absolute z-30 pointer-events-auto hidden lg:block"
-          style={spot.style}
-          onMouseEnter={() => setActiveHotspot(spot.id)}
+          style={{ top: "35%", left: "50%" }}
+          onMouseEnter={() => setActiveHotspot(999)}
           onMouseLeave={() => setActiveHotspot(null)}
         >
           {/* Pulsing Dot */}
@@ -275,26 +351,37 @@ function HeroCarCanvas() {
           
           {/* Tooltip Card */}
           <AnimatePresence>
-            {activeHotspot === spot.id && (
+            {activeHotspot === 999 && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 w-52 glass-panel p-4 rounded-2xl shadow-2xl text-left pointer-events-none"
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 w-56 glass-panel p-4 rounded-2xl shadow-2xl text-left pointer-events-none"
               >
-                <h4 className="text-xs font-bold text-text uppercase tracking-wider mb-1">{spot.title}</h4>
-                <p className="text-[10px] text-textMuted leading-relaxed">{spot.desc}</p>
+                <h4 className="text-xs font-bold text-text uppercase tracking-wider mb-1">
+                  {CAR_MODELS[activeModelIndex].name}
+                </h4>
+                <p className="text-[10px] text-textMuted leading-relaxed">
+                  {activeModelIndex === 0 && "Premium Luxury SUV with 4.4L Twin-Turbo V8 engine."}
+                  {activeModelIndex === 1 && "High-performance Hot Hatch with 2.0L VTEC Turbo engine."}
+                  {activeModelIndex === 2 && "Comfortable family Estate Wagon with 2.5L diesel engine."}
+                </p>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-      ))}
+      )}
+
+
 
       {!isLoaded && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-transparent z-20">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3.5" />
-          <span className="text-[10px] text-textMuted font-medium tracking-wider uppercase select-none">
-            Preparing 3D Showroom {loadingProgress > 0 ? `(${loadingProgress}%)` : ''}
+          <span className="text-[10px] text-textMuted font-medium tracking-wider uppercase select-none text-center px-4">
+            Loading {CAR_MODELS[activeModelIndex].name} <br />
+            <span className="text-[9px] text-primary/80 mt-1 block">
+              {loadingProgress > 0 ? `${loadingProgress}%` : 'Connecting...'}
+            </span>
           </span>
         </div>
       )}
