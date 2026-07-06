@@ -179,6 +179,11 @@ export function Showroom({
     if (initialBudget) setBudgetLimit(initialBudget);
   }, [initialSearchQuery, initialMake, initialModel, initialFuel, initialTransmission, initialBodyStyle, initialBudget]);
 
+  // Scroll back to the top when pagination page changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
+
   // Unique lists from inventory
   const makes = useMemo(() => Array.from(new Set(vehicles.map((v) => v.make))).sort(), [vehicles]);
   
