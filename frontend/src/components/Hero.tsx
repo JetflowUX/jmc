@@ -1,24 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { CheckCircle2, ShieldCheck, Wrench, BadgeCheck } from 'lucide-react';
 import * as THREE from 'three';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
+const EASE_DECELERATE: [number, number, number, number] = [0, 0, 0.2, 1];
+
 const CAR_MODELS = [
-  { name: 'BMW X7 M60i', path: '/3d assets/bmw_x7_m60i.glb' },
-  { name: 'Honda Civic Type-R', path: '/3d assets/honda_civic_type-r.glb' },
-  { name: 'Volvo V50', path: '/3d assets/volvo_v50.glb' }
+  { name: 'BMW X7 M60i', blurb: 'Luxury SUV — 4.4L twin-turbo V8.', path: '/3d assets/bmw_x7_m60i.glb' },
+  { name: 'Honda Civic Type-R', blurb: 'Hot hatch — 2.0L VTEC turbo.', path: '/3d assets/honda_civic_type-r.glb' },
+  { name: 'Volvo V50', blurb: 'Family estate — 2.5L diesel.', path: '/3d assets/volvo_v50.glb' }
 ];
+
+const CYCLE_MS = 5000;
 
 function HeroCarCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
   const carGroupRef = useRef<THREE.Group | null>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
-  const [activeHotspot, setActiveHotspot] = useState<number | null>(null);
 
   // Model swap states
   const [activeModelIndex, setActiveModelIndex] = useState(0);
@@ -26,44 +31,72 @@ function HeroCarCanvas() {
   const cachedModelsRef = useRef<Record<string, THREE.Group>>({});
   const loadingModelRef = useRef<string | null>(null);
 
-  // Cycle car models every 5 seconds
+  // Playback control. The slideshow advances on its own, so it needs a way to
+  // stop it (WCAG 2.2.2) and it should not burn frames when nobody is looking.
+  const [isPaused, setIsPaused] = useState(false);
+  const [isInView, setIsInView] = useState(true);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  // Mirrors for the render loop, which runs outside React's update cycle.
+  const isInViewRef = useRef(true);
+  const reducedMotionRef = useRef(false);
+
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveModelIndex((prev) => (prev + 1) % CAR_MODELS.length);
-    }, 5000);
-    return () => clearInterval(timer);
+    isInViewRef.current = isInView;
+  }, [isInView]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const apply = () => {
+      reducedMotionRef.current = mq.matches;
+      setReducedMotion(mq.matches);
+    };
+    apply();
+    // People change this setting mid-session.
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
   }, []);
 
-  const hotspots = [
-    {
-      id: 1,
-      title: "M TwinPower Turbo V8",
-      desc: "4.4L Twin-Turbo V8 Engine with 48V mild hybrid tech, delivering 530 BHP.",
-      style: { top: "40%", left: "46%" }
-    },
-    {
-      id: 2,
-      title: "Adaptive LED Headlamps",
-      desc: "BMW Laserlight technology with automatic high-beam assist and adaptive cornering.",
-      style: { top: "50%", left: "28%" }
-    },
-    {
-      id: 3,
-      title: "21-inch M Light Alloys",
-      desc: "Double-spoke bi-colour wheels with performance run-flat tires and blue M brakes.",
-      style: { top: "62%", left: "62%" }
-    }
-  ];
+  // Stop rendering and stop advancing once the hero leaves the viewport.
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { rootMargin: '100px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-advance through the models, unless paused, off-screen, or the visitor
+  // has asked for less motion.
+  //
+  // The dwell timer starts when the current model has actually rendered, rather
+  // than on a fixed interval. These models are large; on a fixed 5s interval the
+  // slideshow advances before anything has finished downloading, so the visitor
+  // cycles through loading spinners and never sees a car.
+  useEffect(() => {
+    if (isPaused || !isInView || reducedMotion || !isLoaded) return;
+
+    const timer = setTimeout(() => {
+      setActiveModelIndex((prev) => (prev + 1) % CAR_MODELS.length);
+    }, CYCLE_MS);
+    return () => clearTimeout(timer);
+  }, [isPaused, isInView, reducedMotion, isLoaded, activeModelIndex]);
 
   // Handle mouse movements for parallax
   useEffect(() => {
+    if (reducedMotion) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [reducedMotion]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -72,7 +105,7 @@ function HeroCarCanvas() {
     const height = canvasRef.current.clientHeight;
 
     const scene = new THREE.Scene();
-    
+
     // Default camera configuration (will be updated dynamically)
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     camera.position.set(0, 0.15, 5.0);
@@ -113,10 +146,16 @@ function HeroCarCanvas() {
     const clock = new THREE.Clock();
 
     const currentPos = new THREE.Vector3(0, 0, 0);
-    const currentRot = new THREE.Euler(0, -0.6, 0); 
+    const currentRot = new THREE.Euler(0, -0.6, 0);
     let currentScale = 0.001;
 
     const tick = () => {
+      animationFrameId = requestAnimationFrame(tick);
+
+      // Off-screen: keep the loop alive but do no scene or GPU work.
+      if (!isInViewRef.current) return;
+
+      const reduced = reducedMotionRef.current;
       const elapsedTime = clock.getElapsedTime();
       const width = window.innerWidth;
       const isMobile = width < 768;
@@ -139,28 +178,29 @@ function HeroCarCanvas() {
       }
 
       if (carGroupRef.current) {
-        // Floating effect (sine wave oscillation)
-        const floatOffset = Math.sin(elapsedTime * 1.5) * (isMobile ? 0.025 : (isTablet ? 0.035 : 0.05));
-        const targetY = (isMobile ? 0.30 : (isTablet ? 0.40 : 0.40)) + floatOffset; 
+        // Reduced motion holds the car still at a fixed three-quarter angle —
+        // no float, no spin, no parallax. It still renders, it just doesn't move.
+        const floatOffset = reduced
+          ? 0
+          : Math.sin(elapsedTime * 1.5) * (isMobile ? 0.025 : (isTablet ? 0.035 : 0.05));
+        const targetY = (isMobile ? 0.30 : (isTablet ? 0.40 : 0.40)) + floatOffset;
 
-        // Slowly spin over time
-        const autoSpin = elapsedTime * 0.025;
-        const scrollSpin = typeof window !== 'undefined' ? window.scrollY * 0.0012 : 0;
+        const autoSpin = reduced ? 0 : elapsedTime * 0.025;
+        const scrollSpin = reduced ? 0 : window.scrollY * 0.0012;
 
-        // Mouse Parallax adjustment
-        const parallaxX = mouseRef.current.x * 0.22;
-        const parallaxY = mouseRef.current.y * 0.12;
+        const parallaxX = reduced ? 0 : mouseRef.current.x * 0.22;
+        const parallaxY = reduced ? 0 : mouseRef.current.y * 0.12;
 
         // Set target parameters
         const targetX = 0;
         const targetZ = 0;
-        
+
         const targetRotX = 0.05 + parallaxY;
         const targetRotY = -0.6 + autoSpin + scrollSpin + parallaxX;
         const targetRotZ = 0;
 
         // Scale is adjusted dynamically for mobile vs tablet vs desktop
-        const targetScale = isMobile ? 1.70 : (isTablet ? 2.05 : 2.20); 
+        const targetScale = isMobile ? 1.70 : (isTablet ? 2.05 : 2.20);
 
         // Interpolate (Lerp) values for smooth transitions
         currentPos.x += (targetX - currentPos.x) * 0.05;
@@ -182,7 +222,6 @@ function HeroCarCanvas() {
       }
 
       renderer.render(scene, camera);
-      animationFrameId = requestAnimationFrame(tick);
     };
 
     tick();
@@ -244,12 +283,12 @@ function HeroCarCanvas() {
     // Check if model is already cached
     if (cachedModelsRef.current[modelPath]) {
       const cachedScene = cachedModelsRef.current[modelPath];
-      
+
       // Clear old children
       while (carGroupRef.current.children.length > 0) {
         carGroupRef.current.remove(carGroupRef.current.children[0]);
       }
-      
+
       carGroupRef.current.add(cachedScene);
       setIsLoaded(true);
       setLoadingProgress(100);
@@ -306,7 +345,7 @@ function HeroCarCanvas() {
           }
           carGroupRef.current.add(gltf.scene);
         }
-        
+
         setIsLoaded(true);
         setLoadingProgress(100);
       },
@@ -326,59 +365,69 @@ function HeroCarCanvas() {
 
   if (loadError) return null;
 
+  const activeCar = CAR_MODELS[activeModelIndex];
+
   return (
-    <div className="absolute inset-0 w-full h-full flex items-center justify-center z-10 pointer-events-none">
+    <div
+      ref={wrapperRef}
+      className="absolute inset-0 w-full h-full flex items-center justify-center z-10 pointer-events-none"
+    >
       <canvas
         ref={canvasRef}
-        className="w-full h-full transition-opacity duration-1000 ease-out pointer-events-auto"
+        className="w-full h-full pointer-events-auto"
         style={{
-          opacity: isLoaded ? 1 : 0
+          opacity: isLoaded ? 1 : 0,
+          transition: 'opacity 600ms var(--ease-decelerate)'
         }}
+        aria-hidden="true"
       />
-      
-      {isLoaded && (
-        <div
-          className="absolute z-30 pointer-events-auto hidden lg:block"
-          style={{ top: "35%", left: "50%" }}
-          onMouseEnter={() => setActiveHotspot(999)}
-          onMouseLeave={() => setActiveHotspot(null)}
-        >
-          {/* Pulsing Dot */}
-          <button className="relative w-6 h-6 flex items-center justify-center cursor-pointer focus:outline-none">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping"></span>
-            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-primary border-2 border-white shadow-glow"></span>
-          </button>
-          
-          {/* Tooltip Card */}
-          <AnimatePresence>
-            {activeHotspot === 999 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 w-56 glass-panel p-4 rounded-2xl shadow-2xl text-left pointer-events-none"
-              >
-                <h4 className="text-xs font-bold text-text uppercase tracking-wider mb-1">
-                  {CAR_MODELS[activeModelIndex].name}
-                </h4>
-                <p className="text-[10px] text-textMuted leading-relaxed">
-                  {activeModelIndex === 0 && "Premium Luxury SUV with 4.4L Twin-Turbo V8 engine."}
-                  {activeModelIndex === 1 && "High-performance Hot Hatch with 2.0L VTEC Turbo engine."}
-                  {activeModelIndex === 2 && "Comfortable family Estate Wagon with 2.5L diesel engine."}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+
+      {/* Model selector. Replaces a hover-only tooltip that touch users never
+          saw, and turns a passive slideshow into something the visitor steers. */}
+      <div
+        className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex flex-col items-center gap-2.5"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onFocus={() => setIsPaused(true)}
+        onBlur={() => setIsPaused(false)}
+      >
+        <div className="text-center h-8">
+          <p
+            key={activeCar.name}
+            className="text-[10px] font-bold tracking-[0.18em] text-text uppercase"
+          >
+            {activeCar.name}
+          </p>
+          <p className="text-[10px] text-textMuted mt-0.5 hidden sm:block">{activeCar.blurb}</p>
         </div>
-      )}
 
-
+        <div className="flex items-center gap-1.5 bg-surface/80 backdrop-blur-md border border-border/70 rounded-full px-2 py-1.5 shadow-sm">
+          {CAR_MODELS.map((car, index) => (
+            <button
+              key={car.path}
+              type="button"
+              onClick={() => setActiveModelIndex(index)}
+              aria-label={`Show ${car.name}`}
+              aria-current={index === activeModelIndex}
+              className="w-6 h-6 flex items-center justify-center rounded-full group"
+            >
+              <span
+                className={`block rounded-full transition-all duration-200 ${
+                  index === activeModelIndex
+                    ? 'w-4 h-1.5 bg-primary'
+                    : 'w-1.5 h-1.5 bg-border group-hover:bg-textMuted'
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+      </div>
 
       {!isLoaded && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-transparent z-20">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-3.5" />
-          <span className="text-[10px] text-textMuted font-medium tracking-wider uppercase select-none text-center px-4">
-            Loading {CAR_MODELS[activeModelIndex].name} <br />
+          <span className="text-[10px] text-textMuted font-medium tracking-wider uppercase select-none text-center px-4" role="status">
+            Loading {activeCar.name} <br />
             <span className="text-[9px] text-primary/80 mt-1 block">
               {loadingProgress > 0 ? `${loadingProgress}%` : 'Connecting...'}
             </span>
@@ -390,6 +439,8 @@ function HeroCarCanvas() {
 }
 
 export function Hero() {
+  const reduced = useReducedMotion();
+
   const trustBadges = [
     { icon: ShieldCheck, text: 'HPI Checked' },
     { icon: Wrench, text: '60 Point Inspection' },
@@ -397,29 +448,49 @@ export function Hero() {
     { icon: CheckCircle2, text: 'FCA Regulated' }
   ];
 
+  // One timeline for the whole hero. Previously four blocks each carried their
+  // own delay and raced the canvas fade — five things moving independently
+  // reads as noise rather than choreography.
+  const container: Variants = {
+    hidden: {},
+    show: {
+      transition: { staggerChildren: reduced ? 0 : 0.07 }
+    }
+  };
+
+  const item: Variants = {
+    hidden: { opacity: 0, y: reduced ? 0 : 16 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: reduced ? 0.2 : 0.45, ease: EASE_DECELERATE }
+    }
+  };
+
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-start lg:justify-center py-12 lg:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
+    <section className="relative min-h-screen lg:min-h-[100dvh] flex flex-col items-center justify-start lg:justify-center py-12 lg:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden bg-background">
       {/* Drifting Organic Background Blobs (replicating Spline background) */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
+      <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0" aria-hidden="true">
         <div className="absolute top-1/4 left-1/4 w-72 md:w-[32rem] h-72 md:h-[32rem] bg-primary/5 rounded-full blur-[85px] md:blur-[130px] animate-blob-1" />
         <div className="absolute bottom-1/4 right-1/4 w-80 md:w-[36rem] h-80 md:h-[36rem] bg-border/40 rounded-full blur-[105px] md:blur-[145px] animate-blob-2" />
         <div className="absolute top-1/2 right-10 w-64 md:w-96 h-64 md:h-96 bg-primary/8 rounded-full blur-[75px] md:blur-[115px] animate-blob-1" style={{ animationDirection: 'reverse' }} />
       </div>
 
-      <div className="relative w-full max-w-6xl mx-auto z-10 pt-12 md:pt-20">
+      <motion.div
+        className="relative w-full max-w-6xl mx-auto z-10 pt-12 md:pt-20"
+        variants={container}
+        initial="hidden"
+        animate="show"
+      >
         {/* Centered card mockup matching Spline project structure - fully responsive flex column on mobile and grid on desktop */}
         <div className="relative w-full bg-surface border border-border/80 shadow-glass rounded-[2rem] lg:rounded-[2.5rem] overflow-hidden p-6 lg:p-12 lg:pb-16 flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 min-h-none lg:h-[600px]">
-          
+
           {/* Vertical Divider line */}
-          <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-border/40 z-0 hidden lg:block" />
+          <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-border/40 z-0 hidden lg:block" aria-hidden="true" />
 
           {/* Left Column (Main Brand / Headline) */}
           <div className="flex flex-col justify-between h-auto lg:h-full z-20 relative">
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
+            <motion.div variants={item}>
               <span className="text-[10px] lg:text-xs font-semibold tracking-[0.25em] text-primary/85 uppercase mb-4 block">
                 JMC Motors Heywood
               </span>
@@ -428,9 +499,9 @@ export function Hero() {
                 Next Car
               </h1>
               <div className="pl-4 border-l-2 border-primary max-w-sm mt-6">
-                <h3 className="text-[10px] lg:text-xs font-bold tracking-widest text-text uppercase mb-1.5">
+                <h2 className="text-[10px] lg:text-xs font-bold tracking-widest text-text uppercase mb-1.5">
                   Quality Approved Vehicles
-                </h3>
+                </h2>
                 <p className="text-xs lg:text-sm text-textMuted font-light leading-relaxed">
                   Experience premium car buying with transparency. Fully HPI checked, 60-point inspected, and ready to drive away.
                 </p>
@@ -438,15 +509,10 @@ export function Hero() {
             </motion.div>
 
             {/* Desktop Browse Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-8 lg:mt-0 hidden lg:block"
-            >
+            <motion.div variants={item} className="mt-8 lg:mt-0 hidden lg:block">
               <a
                 href="#/showroom"
-                className="inline-block bg-primary hover:bg-primaryHover text-white px-8 py-4 rounded-full text-xs font-semibold tracking-widest uppercase transition-all shadow-glow hover:shadow-lg text-center"
+                className="inline-block bg-primary hover:bg-primaryHover active:bg-primaryHover active:scale-[0.98] text-white px-8 py-4 rounded-full text-xs font-semibold tracking-widest uppercase shadow-glow hover:shadow-lg text-center transition-[background-color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]"
               >
                 Browse Showroom
               </a>
@@ -465,25 +531,21 @@ export function Hero() {
               <div className="hidden lg:block">
                 <a
                   href="#/showroom"
-                  className="w-11 h-11 border border-border/80 rounded-full flex items-center justify-center text-text hover:text-primary hover:border-primary transition-all duration-300 shadow-sm bg-surface"
+                  aria-label="Go to the showroom"
+                  className="w-11 h-11 border border-border/80 rounded-full flex items-center justify-center text-text hover:text-primary hover:border-primary transition-colors duration-200 shadow-sm bg-surface"
                 >
-                  <svg className="w-4 h-4 transform rotate-[45deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                  <svg className="w-4 h-4 transform rotate-[45deg]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </a>
               </div>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-6 lg:mt-0 max-w-sm lg:pl-4 text-left"
-            >
+            <motion.div variants={item} className="mt-6 lg:mt-0 max-w-sm lg:pl-4 text-left">
               <div className="pl-4 border-l-2 border-primary lg:border-l-0 lg:border-r-2 lg:border-primary lg:pr-4 lg:pl-0 text-left lg:text-right">
-                <h3 className="text-[10px] lg:text-xs font-bold tracking-widest text-text uppercase mb-1.5">
+                <h2 className="text-[10px] lg:text-xs font-bold tracking-widest text-text uppercase mb-1.5">
                   The JMC Promise
-                </h3>
+                </h2>
                 <p className="text-xs lg:text-sm text-textMuted font-light leading-relaxed">
                   Every vehicle undergoes our complete diagnostics inspection, complete with a minimum 12-month MOT and warranty.
                 </p>
@@ -491,25 +553,23 @@ export function Hero() {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              variants={item}
               className="mt-8 lg:mt-0 flex flex-col items-start lg:items-end gap-6 w-full"
             >
               {/* Actions stack for mobile, horizontal on larger screens */}
               <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto justify-start lg:justify-end">
                 <a
                   href="#/showroom"
-                  className="block lg:hidden bg-primary hover:bg-primaryHover text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase transition-all shadow-glow hover:shadow-lg text-center"
+                  className="block lg:hidden bg-primary hover:bg-primaryHover active:scale-[0.98] text-white px-8 py-3.5 rounded-full text-xs font-semibold tracking-widest uppercase shadow-glow hover:shadow-lg text-center transition-[background-color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]"
                 >
                   Browse Showroom
                 </a>
                 <a
                   href="#/soft-credit-checker"
-                  className="flex items-center justify-center gap-3.5 group cursor-pointer bg-surface/50 backdrop-blur-sm border border-border/60 hover:border-primary/40 px-5 py-2.5 rounded-full transition-all duration-300 shadow-sm"
+                  className="flex items-center justify-center gap-3.5 group cursor-pointer bg-surface/50 backdrop-blur-sm border border-border/60 hover:border-primary/40 px-5 py-2.5 rounded-full transition-colors duration-200 shadow-sm"
                 >
-                  <div className="w-8 h-8 rounded-full border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform duration-300 bg-primary/5">
-                    <svg className="w-3.5 h-3.5 fill-current ml-0.5" viewBox="0 0 24 24">
+                  <div className="w-8 h-8 rounded-full border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform duration-200 bg-primary/5">
+                    <svg className="w-3.5 h-3.5 fill-current ml-0.5" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>
@@ -528,15 +588,13 @@ export function Hero() {
 
         {/* Bottom Trust Badges Bar */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          variants={item}
           className="mt-12 w-full border-t border-border/60 pt-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center"
         >
-          {trustBadges.map((badge, index) => (
-            <div key={index} className="flex items-center gap-3 justify-center">
-              <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center text-primary border border-primary/10">
-                <badge.icon className="w-4 h-4" />
+          {trustBadges.map((badge) => (
+            <div key={badge.text} className="flex items-center gap-3 justify-center">
+              <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center text-primary border border-primary/10 shrink-0">
+                <badge.icon className="w-4 h-4" aria-hidden="true" />
               </div>
               <span className="text-[10px] md:text-xs font-semibold tracking-wider text-text uppercase">
                 {badge.text}
@@ -544,7 +602,7 @@ export function Hero() {
             </div>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

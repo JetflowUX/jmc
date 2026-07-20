@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowRight, Calculator } from 'lucide-react';
+import { Reveal } from './Reveal';
 export function PartExchange() {
   const [reg, setReg] = useState('');
   const [mileage, setMileage] = useState('');
@@ -12,18 +13,21 @@ export function PartExchange() {
 
   return (
     <section className="py-24 relative overflow-hidden" id="part-exchange">
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0" aria-hidden="true">
         <img
           src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2066&auto=format&fit=crop"
-          alt="Part Exchange"
+          alt=""
+          loading="lazy"
+          width={2066}
+          height={1377}
           className="w-full h-full object-cover opacity-20" />
-        
+
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/50" />
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div>
+          <Reveal>
             <h2 className="text-3xl md:text-4xl font-serif font-normal text-text mb-6">
               Upgrade Your Drive
             </h2>
@@ -34,26 +38,26 @@ export function PartExchange() {
 
             <ul className="space-y-4 mb-10">
               <li className="flex items-center gap-3 text-text/80">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" aria-hidden="true" />
                 Guaranteed competitive valuations
               </li>
               <li className="flex items-center gap-3 text-text/80">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" aria-hidden="true" />
                 Settle outstanding finance
               </li>
               <li className="flex items-center gap-3 text-text/80">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" aria-hidden="true" />
                 Seamless transition to your new car
               </li>
             </ul>
-          </div>
+          </Reveal>
 
-          <div className="glass-panel p-8 md:p-10 rounded-3xl relative">
-            <div className="absolute -top-6 -right-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl" />
+          <Reveal delay={0.08} className="glass-panel p-8 md:p-10 rounded-3xl relative">
+            <div className="absolute -top-6 -right-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl" aria-hidden="true" />
 
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20">
-                <Calculator className="text-primary" size={24} />
+                <Calculator className="text-primary" size={24} aria-hidden="true" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-text">
@@ -67,44 +71,48 @@ export function PartExchange() {
 
             <form onSubmit={handleValuationSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-textMuted mb-2">
+                <label htmlFor="px-reg" className="block text-sm font-medium text-textMuted mb-2">
                   Vehicle Registration
                 </label>
                 <div className="relative">
                   <input
+                    id="px-reg"
                     type="text"
                     required
                     value={reg}
                     onChange={(e) => setReg(e.target.value)}
                     placeholder="ENTER REG"
-                    className="w-full bg-yellow-400/90 text-black text-center font-bold text-2xl tracking-widest rounded-xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-primary uppercase placeholder:text-black/30" />
-                  
-                  <div className="absolute left-0 top-0 bottom-0 w-8 bg-blue-700 rounded-l-xl flex flex-col items-center justify-center">
+                    className="w-full bg-yellow-400/90 text-black text-center font-bold text-2xl tracking-widest rounded-xl px-4 py-4 uppercase placeholder:text-black/40" />
+
+                  <div className="absolute left-0 top-0 bottom-0 w-8 bg-blue-700 rounded-l-xl flex flex-col items-center justify-center pointer-events-none" aria-hidden="true">
                     <span className="text-[8px] text-white font-bold">GB</span>
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-textMuted mb-2">
+                <label htmlFor="px-mileage" className="block text-sm font-medium text-textMuted mb-2">
                   Current Mileage
                 </label>
                 <input
+                  id="px-mileage"
                   type="text"
+                  inputMode="numeric"
                   required
                   value={mileage}
                   onChange={(e) => setMileage(e.target.value)}
                   placeholder="e.g. 45,000"
-                  className="w-full bg-surface border border-border rounded-xl px-4 py-4 text-text focus:outline-none focus:border-primary transition-colors" />
-                
+                  className="w-full bg-surface border border-border rounded-xl px-4 py-4 text-text focus:border-primary transition-colors duration-150" />
+
               </div>
 
-              <button type="submit" className="w-full bg-primary hover:bg-primaryHover text-white py-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 shadow-glow group">
+              <button type="submit" className="w-full bg-primary hover:bg-primaryHover active:scale-[0.99] text-white py-4 rounded-xl font-medium flex items-center justify-center gap-2 shadow-glow group transition-[background-color,transform] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
                 Get Valuation
                 <ArrowRight
                   size={18}
-                  className="group-hover:translate-x-1 transition-transform" />
-                
+                  aria-hidden="true"
+                  className="group-hover:translate-x-1 transition-transform duration-200 motion-reduce:group-hover:translate-x-0" />
+
               </button>
 
               <p className="text-xs text-center text-textMuted mt-4">
@@ -112,7 +120,7 @@ export function PartExchange() {
                 are subject to physical inspection.
               </p>
             </form>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>);

@@ -9,10 +9,27 @@
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
 @layer base {
+  :root {
+    /* Entrances decelerate, exits accelerate, in-place changes stay standard.
+       Every transition on the site pulls from these three. */
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    --ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  }
+
   body {
     @apply bg-background text-text font-sans antialiased selection:bg-primary selection:text-white;
   }
+
+  /* Keyboard focus is visible everywhere. Offset keeps the ring clear of the
+     element it surrounds, including on primary-coloured fills. */
+  :focus-visible {
+    outline: 2px solid theme('colors.primary');
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
 }
+
 @layer utilities {
   .glass-panel {
     @apply bg-glass backdrop-blur-md border border-border shadow-glass;
@@ -20,11 +37,15 @@
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-text to-text/60;
   }
-  .animate-blob-1 {
-    animation: float-blob-1 22s infinite ease-in-out;
+
+  /* Marquee track. Duration is set per-instance; playback is paused via the
+     data attribute so hover, focus, off-screen, and the pause button all use
+     one mechanism. Runs on the compositor — transform only. */
+  .marquee-track {
+    animation: marquee var(--marquee-duration, 48s) linear infinite;
   }
-  .animate-blob-2 {
-    animation: float-blob-2 28s infinite ease-in-out;
+  .marquee-track[data-paused='true'] {
+    animation-play-state: paused;
   }
 }
 
@@ -40,6 +61,30 @@
   50% { transform: translate(-45px, 45px) scale(1.05); }
   100% { transform: translate(0px, 0px) scale(1); }
 }
+
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+/* Ambient motion is opted INTO, so the reduced path is the default and cannot
+   be forgotten. Without this query the blobs simply sit still — they are
+   decorative blur, and they lose nothing by being static. */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-blob-1 {
+    animation: float-blob-1 22s infinite ease-in-out;
+  }
+  .animate-blob-2 {
+    animation: float-blob-2 28s infinite ease-in-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -53,4 +98,17 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #C1BDB5;
+}
+
+/* Safety net, last in the cascade. Reduces rather than removes, so state
+   changes still land on their final value instead of sticking mid-transition. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
